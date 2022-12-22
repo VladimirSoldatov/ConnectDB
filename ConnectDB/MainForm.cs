@@ -141,6 +141,24 @@ namespace ConnectDB
 
                 getData(sqlCommand, dataGridView2);
             }
+            if (dataGridView1.Columns[dataGridView1.CurrentCell.ColumnIndex].HeaderText == "Название")
+            {
+                   try
+                    {
+                    if(String.IsNullOrEmpty(textBox7.Text))
+                    textBox7.Text = dataGridView1.CurrentCell.Value.ToString();
+                        sqlConnection = new SqlConnection();
+                        {
+                            sqlConnection.ConnectionString = $"Server=localhost; Initial Catalog={textBox7.Text}; Integrated Security=SSPI;";
+                            sqlConnection.Open();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+    
+            }
         }
 
 
@@ -181,12 +199,12 @@ namespace ConnectDB
         }
         private void getData(SqlCommand sqlCommand, object temp)
         {
-         
+
             try
             {
                 using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
                 {
-        
+
                     (temp as DataGridView).Rows.Clear();
                     (temp as DataGridView).Columns.Clear();
 
@@ -241,20 +259,38 @@ namespace ConnectDB
         private void dataGridView2_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
 
-     
-                if (dataGridView1.Columns[dataGridView2.CurrentCell.ColumnIndex].HeaderText == "Имя таблицы")
+
+            if (dataGridView1.Columns[dataGridView2.CurrentCell.ColumnIndex].HeaderText == "Имя таблицы")
+            {
+                if (sqlConnection == null)
+                    button1.PerformClick();
+                SqlCommand sqlCommand = sqlConnection.CreateCommand();
+
+                sqlCommand.CommandText = "" +
+                      $"SELECT TOP 10 * " +
+                      $"FROM [{dataGridView2.CurrentRow.Cells[0].Value}].[{dataGridView2.CurrentRow.Cells[1].Value}].[{dataGridView2.CurrentCell.Value}]";
+
+                getData(sqlCommand, (DataGridView)sender);
+            }
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (sqlConnection != null)
+                    sqlConnection.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + " \n " + ex.HResult + " \n " + ex.Source + " \n " + ex.StackTrace + " \n " + ex.HelpLink + " \n " + ex.Data.ToString());
+
+                foreach (KeyValuePair<string, string> kvp in ex.Data)
                 {
-                    if (sqlConnection == null)
-                        button1.PerformClick();
-                    SqlCommand sqlCommand = sqlConnection.CreateCommand();
-
-                    sqlCommand.CommandText = "" +
-                          $"SELECT TOP 10 * " +
-                          $"FROM [{dataGridView2.CurrentRow.Cells[0].Value}].[{dataGridView2.CurrentRow.Cells[1].Value}].[{dataGridView2.CurrentCell.Value}]";
-
-                    getData(sqlCommand, (DataGridView)sender);
+                    MessageBox.Show(kvp.Key + "  " + kvp.Value);
                 }
-            
+            }
         }
     }
 
