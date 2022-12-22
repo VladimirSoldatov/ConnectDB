@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace ConnectDB
@@ -25,7 +23,7 @@ namespace ConnectDB
                     sqlConnection.ConnectionString = "Server=localhost; Initial Catalog=webpbxReportDB; Integrated Security=SSPI;";
                     sqlConnection.Open();
 
-                    MessageBox.Show("Connected");
+
                 }
             }
             catch (Exception ex)
@@ -59,52 +57,7 @@ namespace ConnectDB
                 sqlCommand.CommandText += $"object_definition(object_id)  like '%{textBox2.Text}%'";
             }
             MessageBox.Show(sqlCommand.CommandText);
-            try
-            {
-                using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
-                {
-                    dataGridView1.Rows.Clear();
-                    dataGridView1.Columns.Clear();
-
-                    List<string> data = new List<string>();
-
-                    for (int i = 0; i < sqlDataReader.FieldCount; i++)
-                        dataGridView1.Columns.Add(sqlDataReader.GetName(i), sqlDataReader.GetName(i));
-
-
-                    if (sqlDataReader.HasRows)
-                    {
-                        while (sqlDataReader.Read())
-                        {
-                            for (int i = 0; i < sqlDataReader.FieldCount; i++)
-                            {
-                                data.Add(sqlDataReader.GetValue(i).ToString());
-                            }
-                            dataGridView1.Rows.Add(data.ToArray());
-                            data.Clear();
-                        }
-                    }
-                    dataGridView1.AutoResizeColumns();
-                    dataGridView1.Width = 0;
-                    for (int i = 0; i < dataGridView1.Columns.Count; i++)
-                    {
-
-                        dataGridView1.Columns[i].Width = dataGridView1.Columns[0].Width;
-                        dataGridView1.Width += dataGridView1.Columns[0].Width;
-
-                    }
-
-                    if (this.Width > 453)
-                        this.Width = dataGridView1.Width + 100;
-                    else
-                        this.Width = 463;
-
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message + " \n " + ex.HResult + " \n " + ex.Source + " \n " + ex.StackTrace + " \n " + ex.HelpLink + " \n " + ex.HelpLink);
-            }
+            getData(sqlCommand, dataGridView1);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -134,52 +87,7 @@ namespace ConnectDB
             }
             sqlCommand.CommandText += " order by [Имя схемы], [Имя таблицы]";
             MessageBox.Show(sqlCommand.CommandText);
-            try
-            {
-                using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
-                {
-                    dataGridView1.Rows.Clear();
-                    dataGridView1.Columns.Clear();
-
-                    List<string> data = new List<string>();
-
-                    for (int i = 0; i < sqlDataReader.FieldCount; i++)
-                        dataGridView1.Columns.Add(sqlDataReader.GetName(i), sqlDataReader.GetName(i));
-
-
-                    if (sqlDataReader.HasRows)
-                    {
-                        while (sqlDataReader.Read())
-                        {
-                            for (int i = 0; i < sqlDataReader.FieldCount; i++)
-                            {
-                                data.Add(sqlDataReader.GetValue(i).ToString());
-                            }
-                            dataGridView1.Rows.Add(data.ToArray());
-                            data.Clear();
-                        }
-                    }
-                    dataGridView1.AutoResizeColumns();
-                    dataGridView1.Width = 0;
-                    for (int i = 0; i < dataGridView1.Columns.Count; i++)
-                    {
-
-
-                        dataGridView1.Width += dataGridView1.Columns[i].Width + 10;
-
-                    }
-
-                    if (this.Width > 500)
-                        this.Width = dataGridView1.Width + 100;
-                    else
-                        this.Width = 500;
-
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message + " \n " + ex.HResult + " \n " + ex.Source + " \n " + ex.StackTrace + " \n " + ex.HelpLink + " \n " + ex.HelpLink);
-            }
+            getData(sqlCommand, dataGridView1);
         }
 
 
@@ -216,59 +124,7 @@ namespace ConnectDB
             }
             else
                 sqlCommand.CommandText += "order by Table_Name, Column_Name";
-            try
-            {
-                using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
-                {
-                    dataGridView1.Rows.Clear();
-                    dataGridView1.Columns.Clear();
-
-                    List<string> data = new List<string>();
-
-                    for (int i = 0; i < sqlDataReader.FieldCount; i++)
-                        dataGridView1.Columns.Add(sqlDataReader.GetName(i), sqlDataReader.GetName(i));
-
-
-                    if (sqlDataReader.HasRows)
-                    {
-                        while (sqlDataReader.Read())
-                        {
-                            for (int i = 0; i < sqlDataReader.FieldCount; i++)
-                            {
-                                data.Add(sqlDataReader.GetValue(i).ToString());
-                            }
-                            dataGridView1.Rows.Add(data.ToArray());
-                            data.Clear();
-                        }
-                    }
-                    dataGridView1.AutoResizeColumns();
-                    dataGridView1.Width = 0;
-                    for (int i = 0; i < dataGridView1.Columns.Count; i++)
-                    {
-
-
-                        dataGridView1.Width += dataGridView1.Columns[i].Width + 10;
-
-                    }
-
-                    if (dataGridView1.Width > 500)
-                        this.Width = dataGridView1.Width + 100;
-                    else
-                        this.Width = 500;
-                    Size resolution = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Size;
-
-                    dataGridView1.Width = this.Width;
-
-
-
-
-
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message + " \n " + ex.HResult + " \n " + ex.Source + " \n " + ex.StackTrace + " \n " + ex.HelpLink + " \n " + ex.HelpLink);
-            }
+            getData(sqlCommand, dataGridView1);
         }
 
         private void dataGridView1_DoubleClick(object sender, EventArgs e)
@@ -283,61 +139,93 @@ namespace ConnectDB
                       $"SELECT TOP 10 * " +
                       $"FROM [{dataGridView1.CurrentRow.Cells[0].Value}].[{dataGridView1.CurrentRow.Cells[1].Value}].[{dataGridView1.CurrentCell.Value}]";
 
-                try
-                {
-                    using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
-                    {
-                        dataGridView2.Rows.Clear();
-                        dataGridView2.Columns.Clear();
-
-                        List<string> data = new List<string>();
-
-                        for (int i = 0; i < sqlDataReader.FieldCount; i++)
-                            dataGridView2.Columns.Add(sqlDataReader.GetName(i), sqlDataReader.GetName(i));
-
-
-                        if (sqlDataReader.HasRows)
-                        {
-                            while (sqlDataReader.Read())
-                            {
-                                data.Clear();
-                                for (int i = 0; i < sqlDataReader.FieldCount; i++)
-                                {
-                                    if(sqlDataReader.GetValue(i) !=null)
-                                    data.Add(sqlDataReader.GetValue(i).ToString());
-                                }
-                                dataGridView2.Rows.Add(data.ToArray());
-                                
-                            }
-                        }
-                        dataGridView2.AutoResizeColumns();
-                        dataGridView2.Width = 0;
-                        for (int i = 0; i < dataGridView1.Columns.Count; i++)
-                        {
-                            dataGridView2.Width += dataGridView2.Columns[i].Width + 10;
-                        }
-
-                        if (dataGridView2.Width > 500)
-                            this.Width = dataGridView2.Width + 100;
-                        else
-                            this.Width = 500;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message + " \n " + ex.HResult + " \n " + ex.Source + " \n " + ex.StackTrace + " \n " + ex.HelpLink + " \n " + ex.Data.ToString());
-                  
-                        foreach (KeyValuePair<string, string> kvp in ex.Data)
-                        {
-                            MessageBox.Show(kvp.Key + "  " + kvp.Value);
-                        }
-                            
-                    
-                }
+                getData(sqlCommand, dataGridView2);
             }
-            else
-                MessageBox.Show(dataGridView2.Columns[dataGridView2.CurrentCell.ColumnIndex].HeaderText);
         }
 
+
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void getData(SqlCommand sqlCommand, object temp)
+        {
+         
+            try
+            {
+                using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                {
+        
+                    (temp as DataGridView).Rows.Clear();
+                    (temp as DataGridView).Columns.Clear();
+
+                    List<string> data = new List<string>();
+
+                    for (int i = 0; i < sqlDataReader.FieldCount; i++)
+                        (temp as DataGridView).Columns.Add(sqlDataReader.GetName(i), sqlDataReader.GetName(i));
+
+
+                    if (sqlDataReader.HasRows)
+                    {
+                        while (sqlDataReader.Read())
+                        {
+                            data.Clear();
+                            for (int i = 0; i < sqlDataReader.FieldCount; i++)
+                            {
+                                if (sqlDataReader.GetValue(i) != null)
+                                    data.Add(sqlDataReader.GetValue(i).ToString());
+
+                            }
+
+                            (temp as DataGridView).Rows.Add(data.ToArray());
+
+                        }
+                    }
+                   (temp as DataGridView).AutoResizeColumns();
+                    (temp as DataGridView).Width = 0;
+                    for (int i = 0; i < dataGridView1.Columns.Count; i++)
+                    {
+                        (temp as DataGridView).Width += (temp as DataGridView).Columns[i].Width + 10;
+                    }
+
+                    if ((temp as DataGridView).Width > 500)
+                        this.Width = dataGridView2.Width + 100;
+                    else
+                        this.Width = 500;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + " \n " + ex.HResult + " \n " + ex.Source + " \n " + ex.StackTrace + " \n " + ex.HelpLink + " \n " + ex.Data.ToString());
+
+                foreach (KeyValuePair<string, string> kvp in ex.Data)
+                {
+                    MessageBox.Show(kvp.Key + "  " + kvp.Value);
+                }
+
+
+            }
+        }
+
+        private void dataGridView2_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+
+     
+                if (dataGridView1.Columns[dataGridView2.CurrentCell.ColumnIndex].HeaderText == "Имя таблицы")
+                {
+                    if (sqlConnection == null)
+                        button1.PerformClick();
+                    SqlCommand sqlCommand = sqlConnection.CreateCommand();
+
+                    sqlCommand.CommandText = "" +
+                          $"SELECT TOP 10 * " +
+                          $"FROM [{dataGridView2.CurrentRow.Cells[0].Value}].[{dataGridView2.CurrentRow.Cells[1].Value}].[{dataGridView2.CurrentCell.Value}]";
+
+                    getData(sqlCommand, (DataGridView)sender);
+                }
+            
+        }
     }
+
 }
