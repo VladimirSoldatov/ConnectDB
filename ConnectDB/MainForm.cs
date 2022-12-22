@@ -147,6 +147,36 @@ namespace ConnectDB
 
         private void button5_Click(object sender, EventArgs e)
         {
+            try
+            {
+
+                sqlConnection = new SqlConnection();
+                {
+                    sqlConnection.ConnectionString = "Server=localhost; Initial Catalog=master; Integrated Security=SSPI;";
+                    sqlConnection.Open();
+                    using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                    {
+                        sqlCommand.CommandText = "" +
+                            "SELECT " +
+                            "database_id AS[ID]" +
+                          ", name AS[Название]" +
+                          ", CONVERT(CHAR(10), create_date, 104) AS[Дата создания]" +
+                          ", state_desc AS[Статус]" +
+                          ", compatibility_level AS[Уровень совместимости]" +
+                          ", recovery_model_desc AS[Модель восстановления] " +
+                          "  FROM " +
+                          "sys.databases";
+                        MessageBox.Show(sqlCommand.CommandText);
+                        getData(sqlCommand, dataGridView1);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
 
         }
         private void getData(SqlCommand sqlCommand, object temp)
