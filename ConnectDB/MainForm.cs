@@ -20,10 +20,8 @@ namespace ConnectDB
 
                 sqlConnection = new SqlConnection();
                 {
-                    sqlConnection.ConnectionString = "Server=localhost; Initial Catalog=webpbxReportDB; Integrated Security=SSPI;";
+                    sqlConnection.ConnectionString = "Server=(i82z0report01); Initial Catalog=webpbxReportDB; Integrated Security=SSPI;";
                     sqlConnection.Open();
-
-
                 }
             }
             catch (Exception ex)
@@ -66,13 +64,10 @@ namespace ConnectDB
                 button1.PerformClick();
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
             sqlCommand.CommandText = "" +
-                "SELECT Table_Catalog as[Имя БД], table_SCHEMA as [Имя схемы], TABLE_NAME AS[Имя таблицы] " +
+                "SELECT Tables.Table_Catalog as[Имя БД], tables.table_SCHEMA as [Имя схемы], tables.TABLE_NAME AS[Имя таблицы] " +
                 "FROM INFORMATION_SCHEMA.TABLES " +
-                "WHERE table_type = 'BASE TABLE' ";
-            if (!String.IsNullOrEmpty(textBox3.Text) || !String.IsNullOrEmpty(textBox4.Text))
-            {
-                sqlCommand.CommandText += "where ";
-            }
+                 "where TABLE_TYPE = 'Base Table'  ";
+    
             if (!String.IsNullOrEmpty(textBox3.Text) && String.IsNullOrEmpty(textBox4.Text))
             {
                 sqlCommand.CommandText += $"[Имя таблицы]={textBox1.Text} ";
@@ -97,34 +92,51 @@ namespace ConnectDB
                 button1.PerformClick();
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
 
-            sqlCommand.CommandText = "" +
-                  "SELECT Table_Catalog as[Имя БД], table_SCHEMA as [Имя схемы], TABLE_NAME AS[Имя таблицы], " +
-                  "COLUMN_NAME AS[Имя столбца], " +
-                  "DATA_TYPE AS[Тип данных столбца], " +
-                  "IS_NULLABLE AS[Значения NULL] " +
-                  "FROM INFORMATION_SCHEMA.COLUMNS ";
-            if (!String.IsNullOrEmpty(textBox5.Text) || !String.IsNullOrEmpty(textBox6.Text))
+            try
             {
-                sqlCommand.CommandText += "where ";
-                if (!String.IsNullOrEmpty(textBox5.Text) && String.IsNullOrEmpty(textBox6.Text))
+                sqlCommand.CommandText = "" +
+                    "SELECT " +
+                    "Tables.Table_Catalog as[Имя БД] " +
+                     ", tables.TABLE_NAME AS[Имя таблицы] " +
+                     ", Columns.COLUMN_NAME AS[Имя столбца] " +
+                     ", Columns.DATA_TYPE AS[Тип данных столбца] " +
+                    "FROM INFORMATION_SCHEMA.TABLES Tables " +
+                    "left join INFORMATION_SCHEMA.COLUMNS Columns " +
+                    "ON " +
+                    "Columns.TABLE_NAME = Tables.TABLE_NAME " +
+                    "and Columns.TABLE_SCHEMA = Tables.TABLE_SCHEMA " +
+                    "and Columns.TABLE_CATALOG = Tables.TABLE_CATALOG " +
+                    "where Tables.TABLE_TYPE = 'Base Table'  " +
+                    "";
+
+
+                if (!String.IsNullOrEmpty(textBox5.Text) || !String.IsNullOrEmpty(textBox6.Text))
                 {
-                    sqlCommand.CommandText += $"Table_Name like '%{textBox5.Text}%' ";
-                    sqlCommand.CommandText += " order by Table_Name";
+
+                    if (!String.IsNullOrEmpty(textBox5.Text) && String.IsNullOrEmpty(textBox6.Text))
+                    {
+                        sqlCommand.CommandText += $" and Tables.Table_Name like '%{textBox5.Text}%' ";
+                        sqlCommand.CommandText += " order by Tables.Table_Name";
+                    }
+                    if (!String.IsNullOrEmpty(textBox5.Text) && !String.IsNullOrEmpty(textBox6.Text))
+                    {
+                        sqlCommand.CommandText += $"and Tables.Table_Name like '%{textBox5.Text}%' and Columns.Column_Name  like '%{textBox6.Text}%'";
+                        sqlCommand.CommandText += " order by Tables.Table_name, Columns.Column_Name ";
+                    }
+                    if (String.IsNullOrEmpty(textBox5.Text) && !String.IsNullOrEmpty(textBox6.Text))
+                    {
+                        sqlCommand.CommandText += $" and Columns.Column_Name  like '%{textBox6.Text}%'";
+                        sqlCommand.CommandText += " order by Columns.Column_Name";
+                    }
                 }
-                if (!String.IsNullOrEmpty(textBox5.Text) && !String.IsNullOrEmpty(textBox6.Text))
-                {
-                    sqlCommand.CommandText += $"Table_Name like '%{textBox5.Text}%' and Column_Name  like '%{textBox6.Text}%'";
-                    sqlCommand.CommandText += " order by Table_name, Column_Name";
-                }
-                if (String.IsNullOrEmpty(textBox5.Text) && !String.IsNullOrEmpty(textBox6.Text))
-                {
-                    sqlCommand.CommandText += $"Column_Name  like '%{textBox6.Text}%'";
-                    sqlCommand.CommandText += " order by Column_Name";
-                }
+                else
+                    sqlCommand.CommandText += "order by Tables.Table_Name, Columns.Column_Name";
+                getData(sqlCommand, dataGridView1);
             }
-            else
-                sqlCommand.CommandText += "order by Table_Name, Column_Name";
-            getData(sqlCommand, dataGridView1);
+            catch
+            {
+                MessageBox.Show(sqlCommand.CommandText);
+            }
         }
 
         private void dataGridView1_DoubleClick(object sender, EventArgs e)
@@ -184,8 +196,7 @@ namespace ConnectDB
                           ", recovery_model_desc AS[Модель восстановления] " +
                           "  FROM " +
                           "sys.databases";
-                        MessageBox.Show(sqlCommand.CommandText);
-                        getData(sqlCommand, dataGridView1);
+                           getData(sqlCommand, dataGridView1);
                     }
 
                 }
