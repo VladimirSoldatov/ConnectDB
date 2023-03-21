@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Security;
+using System.Diagnostics;
+using System.IO;
 
 namespace ConnectDB
 {
     public partial class MainForm : Form
     {
         SqlConnection sqlConnection = null;
+
         public MainForm()
         {
             InitializeComponent();
@@ -15,23 +19,27 @@ namespace ConnectDB
 
         private void button1_Click(object sender, EventArgs e)
         {
-            try
+            using (var item = new Impersonator("vladimir.soldatov", "VATS", "@Altavista1963"))
             {
 
                 sqlConnection = new SqlConnection();
                 {
-                    sqlConnection.ConnectionString = "Server=(i82z0report01); Initial Catalog=webpbxReportDB; Integrated Security=SSPI;";
+                    sqlConnection.ConnectionString = "Server=10.243.32.196; Initial Catalog=webpbxReportDB; Integrated Security=SSPI;";
+                    
                     sqlConnection.Open();
+                    
                 }
+
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+  
+
+
         }
+
 
         private void button2_Click(object sender, EventArgs e)
         {
+
             if (sqlConnection == null)
                 button1.PerformClick();
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
@@ -56,6 +64,14 @@ namespace ConnectDB
             }
             MessageBox.Show(sqlCommand.CommandText);
             getData(sqlCommand, dataGridView1);
+            foreach(DataGridViewRow item in dataGridView1.Rows)
+            {
+                if(!String.IsNullOrEmpty(item.Cells[0].FormattedValue.ToString()))
+                    using (StreamWriter sw = new StreamWriter("HP\\" + item.Cells[0].FormattedValue.ToString() + ".xml"))
+                    {
+                        sw.WriteLine(item.Cells[1].FormattedValue.ToString());
+                    }
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -83,6 +99,11 @@ namespace ConnectDB
             sqlCommand.CommandText += " order by [Имя схемы], [Имя таблицы]";
             MessageBox.Show(sqlCommand.CommandText);
             getData(sqlCommand, dataGridView1);
+            foreach(DataGridViewRow item in dataGridView1.Rows)
+            {
+                item.Cells[1].ToString();
+                break;
+            }
         }
 
 
@@ -303,6 +324,68 @@ namespace ConnectDB
                 }
             }
         }
+
+
+        public static Process Elevated(string process, string args, string username, string password, string workingDirectory)
+        {
+            if (process == null || process.Length == 0) throw new ArgumentNullException("process");
+
+            process = Path.GetFullPath(process);
+            string domain = null;
+            if (username != null)
+                username = GetUsername(username, out domain);
+            ProcessStartInfo info = new ProcessStartInfo();
+            info.UseShellExecute = false;
+            info.Arguments = args;
+            info.WorkingDirectory = workingDirectory ?? Path.GetDirectoryName(process);
+            info.FileName = process;
+            info.Verb = "runas";
+            info.UserName = username;
+            info.Domain = domain;
+            info.LoadUserProfile = true;
+            if (password != null)
+            {
+                SecureString ss = new SecureString();
+                foreach (char c in password)
+                    ss.AppendChar(c);
+                info.Password = ss;
+            }
+
+            return Process.Start(info);
+        }
+
+        private static string GetUsername(string username, out string domain)
+        {
+            SplitUserName(username, out username, out domain);
+
+            if (domain == null && username.IndexOf('@') < 0)
+                domain = Environment.GetEnvironmentVariable("USERDOMAIN");
+            return username;
+        }
+
+        private static void SplitUserName(string username1, out string username2, out string domain)
+        {
+            var auth = username1.Split('\\');
+            username2 = auth[1];
+            domain = auth[0];
+        }
     }
 
+
+
+
+
 }
+
+
+
+
+
+
+/*sqlConnection = new SqlConnection();
+                                {
+                                    sqlConnection.ConnectionString = "Server=i82z0report01; Initial Catalog=webpbxReportDB; Integrated Security=SSPI;";
+                                    sqlConnection.Open();
+                                }
+
+    */
