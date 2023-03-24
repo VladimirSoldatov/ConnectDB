@@ -24,7 +24,13 @@ namespace ConnectDB
 
                 sqlConnection = new SqlConnection();
                 {
-                    sqlConnection.ConnectionString = "Server=10.243.32.196; Initial Catalog=webpbxReportDB; Integrated Security=SSPI;";
+                    string baseName;
+                    if (comboBox2.SelectedItem.ToString() == "i82z0report01.vats.local")
+                        baseName = "webpbxReportDB";
+                    else
+                        baseName = "billing_federal";
+
+                    sqlConnection.ConnectionString = $"Server={comboBox2.SelectedItem.ToString()}; Initial Catalog={baseName}; Integrated Security=SSPI;";
                     
                     sqlConnection.Open();
                     
@@ -64,13 +70,30 @@ namespace ConnectDB
             }
             MessageBox.Show(sqlCommand.CommandText);
             getData(sqlCommand, dataGridView1);
-            foreach(DataGridViewRow item in dataGridView1.Rows)
+            if (!Directory.Exists("WebRS"))
+                Directory.CreateDirectory("WebRS");
+            if (!Directory.Exists("Billing"))
+                Directory.CreateDirectory("Billing");
+            string path = String.Empty;
+            if (comboBox2.SelectedItem.ToString() == "i82z0report01.vats.local")
+                path = "WebRS";
+            else
+                path = "Billing";
+            string curPath = $"{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs\\{path}\\";
+            using (StreamWriter swc = new StreamWriter($"{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs\\"+ "list.txt"))
             {
-                if(!String.IsNullOrEmpty(item.Cells[0].FormattedValue.ToString()))
-                    using (StreamWriter sw = new StreamWriter("HP\\" + item.Cells[0].FormattedValue.ToString() + ".xml"))
+                foreach (DataGridViewRow item in dataGridView1.Rows)
+                {
+                    if (!String.IsNullOrEmpty(item.Cells[0].FormattedValue.ToString()))
                     {
-                        sw.WriteLine(item.Cells[1].FormattedValue.ToString());
+                        using (StreamWriter sw = new StreamWriter(curPath + item.Cells[0].FormattedValue.ToString() + ".xml"))
+                        {
+                            sw.WriteLine(item.Cells[1].FormattedValue.ToString());
+                        }
+
+                        swc.WriteLine($" object_definition(object_id) like '%{item.Cells[0].FormattedValue}%' or ");
                     }
+                }
             }
         }
 
@@ -368,6 +391,11 @@ namespace ConnectDB
             var auth = username1.Split('\\');
             username2 = auth[1];
             domain = auth[0];
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            comboBox2.SelectedIndex = 0;
         }
     }
 
