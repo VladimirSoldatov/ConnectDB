@@ -33,13 +33,13 @@ namespace ConnectDB
                         baseName = "billing_federal";
 
                     sqlConnection.ConnectionString = $"Server={comboBox2.SelectedItem.ToString()}; Initial Catalog={baseName}; Integrated Security=SSPI;";
-                    
+
                     sqlConnection.Open();
-                    
+
                 }
 
             }
-  
+
 
 
         }
@@ -48,9 +48,9 @@ namespace ConnectDB
         private void button2_Click(object sender, EventArgs e)
         {
 
-          
+
             button1.PerformClick();
-           
+
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
             sqlCommand.CommandText = "" +
                 "select name, object_definition(object_id) " +
@@ -72,8 +72,8 @@ namespace ConnectDB
                 sqlCommand.CommandText += $"object_definition(object_id)  like '%{textBox2.Text}%'";
             }
             MessageBox.Show(sqlCommand.CommandText);
-            string distributive = String.Empty; 
-            string curPath = String.Empty; 
+            string distributive = String.Empty;
+            string curPath = String.Empty;
             getData(sqlCommand, dataGridView1);
             string path = String.Empty;
             if (comboBox2.SelectedItem.ToString() == "i82z0report01.vats.local")
@@ -81,31 +81,31 @@ namespace ConnectDB
             else
                 path = "Billing";
             distributive = $"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs";
-            curPath = distributive + "\\" +path;
+            curPath = distributive + "\\" + path;
             if (!Directory.Exists(distributive))
                 Directory.CreateDirectory(distributive);
             if (!Directory.Exists(curPath))
                 Directory.CreateDirectory(curPath);
-            
 
-                foreach (DataGridViewRow item in dataGridView1.Rows)
+
+            foreach (DataGridViewRow item in dataGridView1.Rows)
+            {
+                if (!String.IsNullOrEmpty(item.Cells[0].FormattedValue.ToString()))
                 {
-                    if (!String.IsNullOrEmpty(item.Cells[0].FormattedValue.ToString()))
-                    {
                     using (StreamWriter sw = new StreamWriter(curPath + "\\" + item.Cells[0].FormattedValue.ToString() + ".xml"))
                     {
                         sw.WriteLine(item.Cells[1].FormattedValue.ToString());
                         string text = item.Cells[0].FormattedValue.ToString();
-                        int count = stored.Count(u => u == path +"\\" + text);
+                        int count = stored.Count(u => u == path + "\\" + text);
                         if (count == 0)
-                            {
+                        {
                             stored.Add(path + "\\" + item.Cells[0].FormattedValue.ToString());
-                            }
                         }
-
                     }
-                } 
-                
+
+                }
+            }
+
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -117,7 +117,7 @@ namespace ConnectDB
                 "SELECT Tables.Table_Catalog as[Имя БД], tables.table_SCHEMA as [Имя схемы], tables.TABLE_NAME AS[Имя таблицы] " +
                 "FROM INFORMATION_SCHEMA.TABLES " +
                  "where TABLE_TYPE = 'Base Table'  ";
-    
+
             if (!String.IsNullOrEmpty(textBox3.Text) && String.IsNullOrEmpty(textBox4.Text))
             {
                 sqlCommand.CommandText += $"[Имя таблицы]={textBox1.Text} ";
@@ -133,7 +133,7 @@ namespace ConnectDB
             sqlCommand.CommandText += " order by [Имя схемы], [Имя таблицы]";
             MessageBox.Show(sqlCommand.CommandText);
             getData(sqlCommand, dataGridView1);
-            foreach(DataGridViewRow item in dataGridView1.Rows)
+            foreach (DataGridViewRow item in dataGridView1.Rows)
             {
                 item.Cells[1].ToString();
                 break;
@@ -210,21 +210,21 @@ namespace ConnectDB
             }
             if (dataGridView1.Columns[dataGridView1.CurrentCell.ColumnIndex].HeaderText == "Название")
             {
-                   try
+                try
+                {
+                    if (String.IsNullOrEmpty(textBox7.Text))
+                        textBox7.Text = dataGridView1.CurrentCell.Value.ToString();
+                    sqlConnection = new SqlConnection();
                     {
-                    if(String.IsNullOrEmpty(textBox7.Text))
-                    textBox7.Text = dataGridView1.CurrentCell.Value.ToString();
-                        sqlConnection = new SqlConnection();
-                        {
-                            sqlConnection.ConnectionString = $"Server=localhost; Initial Catalog={textBox7.Text}; Integrated Security=SSPI;";
-                            sqlConnection.Open();
-                        }
+                        sqlConnection.ConnectionString = $"Server=localhost; Initial Catalog={textBox7.Text}; Integrated Security=SSPI;";
+                        sqlConnection.Open();
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-    
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
             }
         }
 
@@ -251,7 +251,7 @@ namespace ConnectDB
                           ", recovery_model_desc AS[Модель восстановления] " +
                           "  FROM " +
                           "sys.databases";
-                           getData(sqlCommand, dataGridView1);
+                        getData(sqlCommand, dataGridView1);
                     }
 
                 }
@@ -421,6 +421,31 @@ namespace ConnectDB
 
             }
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            button1.PerformClick();
+
+            SqlCommand sqlCommand = sqlConnection.CreateCommand();
+            sqlCommand.CommandText = textBox10.Text;
+            MessageBox.Show(sqlCommand.CommandText);
+
+            getData(sqlCommand, dataGridView1);
+
+
+
+            foreach (DataGridViewRow item in dataGridView1.Rows)
+            {
+
+                using (StreamWriter sw = new StreamWriter("result.sql"))
+                {
+                    sw.WriteLine(item.Cells[0].FormattedValue.ToString());
+
+                }
+
+            }
+        }
+
     }
 
 

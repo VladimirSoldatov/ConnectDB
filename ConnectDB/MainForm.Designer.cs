@@ -58,6 +58,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.textBox9 = new System.Windows.Forms.TextBox();
+            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.button7 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
@@ -65,7 +67,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(31, 612);
+            this.button1.Location = new System.Drawing.Point(16, 574);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(105, 32);
             this.button1.TabIndex = 0;
@@ -82,6 +84,7 @@
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.Size = new System.Drawing.Size(1023, 181);
             this.dataGridView1.TabIndex = 1;
+            this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.DoubleClick += new System.EventHandler(this.dataGridView1_DoubleClick);
             // 
             // button2
@@ -285,7 +288,7 @@
             this.comboBox2.Items.AddRange(new object[] {
             "i82z0report01.vats.local",
             "p0a8i82z2bps02.vats.local"});
-            this.comboBox2.Location = new System.Drawing.Point(269, 622);
+            this.comboBox2.Location = new System.Drawing.Point(254, 584);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(203, 21);
             this.comboBox2.TabIndex = 24;
@@ -293,7 +296,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(152, 619);
+            this.label7.Location = new System.Drawing.Point(137, 581);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(68, 13);
             this.label7.TabIndex = 25;
@@ -302,7 +305,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(547, 622);
+            this.label8.Location = new System.Drawing.Point(481, 587);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(96, 13);
             this.label8.TabIndex = 26;
@@ -310,16 +313,36 @@
             // 
             // textBox9
             // 
-            this.textBox9.Location = new System.Drawing.Point(684, 619);
+            this.textBox9.Location = new System.Drawing.Point(669, 581);
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(164, 20);
             this.textBox9.TabIndex = 27;
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(16, 627);
+            this.textBox10.Multiline = true;
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new System.Drawing.Size(979, 20);
+            this.textBox10.TabIndex = 28;
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(472, 671);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(105, 32);
+            this.button7.TabIndex = 29;
+            this.button7.Text = "button7";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1023, 671);
+            this.ClientSize = new System.Drawing.Size(1023, 725);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.textBox10);
             this.Controls.Add(this.textBox9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -391,6 +414,8 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.Button button7;
     }
 }
 
