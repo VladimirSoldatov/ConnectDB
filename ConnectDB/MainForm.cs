@@ -5,12 +5,14 @@ using System.Windows.Forms;
 using System.Security;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace ConnectDB
 {
     public partial class MainForm : Form
     {
         SqlConnection sqlConnection = null;
+        List<string> stored = new List<string>();
 
         public MainForm()
         {
@@ -46,8 +48,9 @@ namespace ConnectDB
         private void button2_Click(object sender, EventArgs e)
         {
 
-            if (sqlConnection == null)
-                button1.PerformClick();
+          
+            button1.PerformClick();
+           
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
             sqlCommand.CommandText = "" +
                 "select name, object_definition(object_id) " +
@@ -69,32 +72,40 @@ namespace ConnectDB
                 sqlCommand.CommandText += $"object_definition(object_id)  like '%{textBox2.Text}%'";
             }
             MessageBox.Show(sqlCommand.CommandText);
+            string distributive = String.Empty; 
+            string curPath = String.Empty; 
             getData(sqlCommand, dataGridView1);
-            if (!Directory.Exists("WebRS"))
-                Directory.CreateDirectory("WebRS");
-            if (!Directory.Exists("Billing"))
-                Directory.CreateDirectory("Billing");
             string path = String.Empty;
             if (comboBox2.SelectedItem.ToString() == "i82z0report01.vats.local")
                 path = "WebRS";
             else
                 path = "Billing";
-            string curPath = $"{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs\\{path}\\";
-            using (StreamWriter swc = new StreamWriter($"{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs\\"+ "list.txt"))
-            {
+            distributive = $"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs";
+            curPath = distributive + "\\" +path;
+            if (!Directory.Exists(distributive))
+                Directory.CreateDirectory(distributive);
+            if (!Directory.Exists(curPath))
+                Directory.CreateDirectory(curPath);
+            
+
                 foreach (DataGridViewRow item in dataGridView1.Rows)
                 {
                     if (!String.IsNullOrEmpty(item.Cells[0].FormattedValue.ToString()))
                     {
-                        using (StreamWriter sw = new StreamWriter(curPath + item.Cells[0].FormattedValue.ToString() + ".xml"))
-                        {
-                            sw.WriteLine(item.Cells[1].FormattedValue.ToString());
+                    using (StreamWriter sw = new StreamWriter(curPath + "\\" + item.Cells[0].FormattedValue.ToString() + ".xml"))
+                    {
+                        sw.WriteLine(item.Cells[1].FormattedValue.ToString());
+                        string text = item.Cells[0].FormattedValue.ToString();
+                        int count = stored.Count(u => u == path +"\\" + text);
+                        if (count == 0)
+                            {
+                            stored.Add(path + "\\" + item.Cells[0].FormattedValue.ToString());
+                            }
                         }
 
-                        swc.WriteLine($" object_definition(object_id) like '%{item.Cells[0].FormattedValue}%' or ");
                     }
-                }
-            }
+                } 
+                
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -396,6 +407,19 @@ namespace ConnectDB
         private void MainForm_Load(object sender, EventArgs e)
         {
             comboBox2.SelectedIndex = 0;
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            using (StreamWriter sw = new StreamWriter
+                (
+                $"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs" + "\\" + "list.txt")
+                )
+            {
+                foreach (string item in stored)
+                    sw.WriteLine(item);
+
+            }
         }
     }
 
