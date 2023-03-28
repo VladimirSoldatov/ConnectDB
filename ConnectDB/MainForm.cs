@@ -411,6 +411,8 @@ namespace ConnectDB
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (!Directory.Exists($"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs"))
+                Directory.CreateDirectory($"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs");
             using (StreamWriter sw = new StreamWriter
                 (
                 $"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs" + "\\" + "list.txt")
