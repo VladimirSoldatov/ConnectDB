@@ -6,6 +6,7 @@ using System.Security;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Collections;
 
 namespace ConnectDB
 {
@@ -313,7 +314,7 @@ namespace ConnectDB
             {
                 MessageBox.Show(ex.Message + " \n " + ex.HResult + " \n " + ex.Source + " \n " + ex.StackTrace + " \n " + ex.HelpLink + " \n " + ex.Data.ToString());
 
-                foreach (KeyValuePair<string, string> kvp in ex.Data)
+                foreach (DictionaryEntry kvp in ex.Data)
                 {
                     MessageBox.Show(kvp.Key + "  " + kvp.Value);
                 }
@@ -352,7 +353,7 @@ namespace ConnectDB
             {
                 MessageBox.Show(ex.Message + " \n " + ex.HResult + " \n " + ex.Source + " \n " + ex.StackTrace + " \n " + ex.HelpLink + " \n " + ex.Data.ToString());
 
-                foreach (KeyValuePair<string, string> kvp in ex.Data)
+                foreach (DictionaryEntry kvp in ex.Data)
                 {
                     MessageBox.Show(kvp.Key + "  " + kvp.Value);
                 }
@@ -424,13 +425,62 @@ namespace ConnectDB
             }
         }
 
+    
+
         private void button7_Click(object sender, EventArgs e)
         {
-            button1.PerformClick();
 
+
+
+            if (textBox10.Text.Contains("{") || textBox10.Text.Contains("}"))
+            {
+                int tmp = comboBox2.SelectedIndex;
+                comboBox2.SelectedIndex = 0;
+                button1.PerformClick();
+                Dictionary<int, string> ASR = new Dictionary<int, string>();
+                using (SqlCommand sqlCommand1 = sqlConnection.CreateCommand())
+                {
+                    sqlCommand1.CommandText = "EXEC Rep.DEFIR_FileTypeC_RS";
+                    using (SqlDataReader sqlDataReader = sqlCommand1.ExecuteReader())
+                    {
+                        if (sqlDataReader.HasRows)
+                        {
+                            while (sqlDataReader.Read())
+                            {
+                                ASR.Add(sqlDataReader.GetInt16(0), sqlDataReader.GetString(1));
+                            }
+                        }
+                    }
+                }
+                comboBox2.SelectedIndex = 1;
+                    button1.PerformClick();
+                foreach (var AsrList in ASR)
+                {
+                    using (SqlCommand sqlCommand1 = sqlConnection.CreateCommand())
+                    {
+                        sqlCommand1.CommandText = String.Format(textBox10.Text, AsrList.Key.ToString());
+                        using (SqlDataReader sqlDataReader = sqlCommand1.ExecuteReader())
+                        {
+                            if (sqlDataReader.HasRows)
+                            {
+                                while (sqlDataReader.Read())
+                                {
+                                    using (StreamWriter sw = new StreamWriter("ASR\\" +AsrList.Value.Replace("<", "_").Replace(">", "_") + ".sql"))
+                                        if (sqlDataReader.GetValue(0) != DBNull.Value)
+                                        sw.WriteLine(sqlDataReader.GetString(0));
+                                }
+                            }
+                        }
+                    }
+
+                }
+                
+                return;
+            }
+            button1.PerformClick();
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
             sqlCommand.CommandText = textBox10.Text;
-            MessageBox.Show(sqlCommand.CommandText);
+            // MessageBox.Show(sqlCommand.CommandText);
 
             getData(sqlCommand, dataGridView1);
 
@@ -446,12 +496,12 @@ namespace ConnectDB
                 }
 
             }
+
+
+
         }
 
     }
-
-
-
 
 
 }
