@@ -111,25 +111,25 @@ namespace ConnectDB
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (sqlConnection == null)
+        
                 button1.PerformClick();
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
             sqlCommand.CommandText = "" +
-                "SELECT Tables.Table_Catalog as[Имя БД], tables.table_SCHEMA as [Имя схемы], tables.TABLE_NAME AS[Имя таблицы] " +
+                "SELECT Tables.Table_Catalog as [Имя БД], tables.table_SCHEMA as [Имя схемы], tables.TABLE_NAME AS [Имя таблицы] " +
                 "FROM INFORMATION_SCHEMA.TABLES " +
                  "where TABLE_TYPE = 'Base Table'  ";
 
             if (!String.IsNullOrEmpty(textBox3.Text) && String.IsNullOrEmpty(textBox4.Text))
             {
-                sqlCommand.CommandText += $"[Имя таблицы]={textBox1.Text} ";
+                sqlCommand.CommandText += $" and TABLE_NAME='{textBox3.Text}' ";
             }
             if (!String.IsNullOrEmpty(textBox3.Text) && !String.IsNullOrEmpty(textBox4.Text))
             {
-                sqlCommand.CommandText += $"[Имя таблицы]={textBox1.Text} and [Имя схемы]  like '{textBox4.Text}'";
+                sqlCommand.CommandText += $"and TABLE_NAME='{textBox3.Text}' and table_SCHEMA  like '{textBox4.Text}' ";
             }
             if (String.IsNullOrEmpty(textBox3.Text) && !String.IsNullOrEmpty(textBox4.Text))
             {
-                sqlCommand.CommandText += $"[Имя схемы]  like '%{textBox4.Text}%'";
+                sqlCommand.CommandText += $"and table_SCHEMA  like '%{textBox4.Text}%' ";
             }
             sqlCommand.CommandText += " order by [Имя схемы], [Имя таблицы]";
             MessageBox.Show(sqlCommand.CommandText);

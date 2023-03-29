@@ -78,7 +78,7 @@
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.Size = new System.Drawing.Size(1035, 181);
+            this.dataGridView1.Size = new System.Drawing.Size(984, 181);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.DoubleClick += new System.EventHandler(this.dataGridView1_DoubleClick);
             // 
@@ -215,7 +215,7 @@
             this.dataGridView2.Location = new System.Drawing.Point(0, 181);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.RowHeadersVisible = false;
-            this.dataGridView2.Size = new System.Drawing.Size(1035, 194);
+            this.dataGridView2.Size = new System.Drawing.Size(984, 194);
             this.dataGridView2.TabIndex = 18;
             this.dataGridView2.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView2_CellMouseDoubleClick);
             // 
@@ -313,7 +313,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1035, 690);
+            this.ClientSize = new System.Drawing.Size(984, 711);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.textBox10);
             this.Controls.Add(this.textBox9);
