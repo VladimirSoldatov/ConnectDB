@@ -114,8 +114,8 @@ namespace ConnectDB
 
         private void button3_Click(object sender, EventArgs e)
         {
-        
-                button1.PerformClick();
+
+            button1.PerformClick();
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
             sqlCommand.CommandText = "" +
                 "SELECT Tables.Table_Catalog as [Имя БД], tables.table_SCHEMA as [Имя схемы], tables.TABLE_NAME AS [Имя таблицы] " +
@@ -428,14 +428,14 @@ namespace ConnectDB
             }
         }
 
-    
+
 
         private void button7_Click(object sender, EventArgs e)
         {
 
 
 
-            if (textBox10.Text.Contains("{") || textBox10.Text.Contains("}"))
+            if (richTextBox1.Text.Contains("{") || richTextBox1.Text.Contains("}"))
             {
                 int tmp = comboBox2.SelectedIndex;
                 comboBox2.SelectedIndex = 0;
@@ -456,33 +456,33 @@ namespace ConnectDB
                     }
                 }
                 comboBox2.SelectedIndex = 1;
-                    button1.PerformClick();
+                button1.PerformClick();
                 foreach (var AsrList in ASR)
                 {
                     using (SqlCommand sqlCommand1 = sqlConnection.CreateCommand())
                     {
-                        sqlCommand1.CommandText = String.Format(textBox10.Text, AsrList.Key.ToString());
+                        sqlCommand1.CommandText = String.Format(richTextBox1.Text, AsrList.Key.ToString());
                         using (SqlDataReader sqlDataReader = sqlCommand1.ExecuteReader())
                         {
                             if (sqlDataReader.HasRows)
                             {
                                 while (sqlDataReader.Read())
                                 {
-                                    using (StreamWriter sw = new StreamWriter("ASR\\" +AsrList.Value.Replace("<", "_").Replace(">", "_") + ".sql"))
+                                    using (StreamWriter sw = new StreamWriter("ASR\\" + AsrList.Value.Replace("<", "_").Replace(">", "_") + ".sql"))
                                         if (sqlDataReader.GetValue(0) != DBNull.Value)
-                                        sw.WriteLine(sqlDataReader.GetString(0));
+                                            sw.WriteLine(sqlDataReader.GetString(0));
                                 }
                             }
                         }
                     }
 
                 }
-                
+
                 return;
             }
             button1.PerformClick();
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
-            sqlCommand.CommandText = textBox10.Text;
+            sqlCommand.CommandText = richTextBox1.Text;
             // MessageBox.Show(sqlCommand.CommandText);
 
             getData(sqlCommand, dataGridView1);
@@ -507,23 +507,23 @@ namespace ConnectDB
         private void button8_Click(object sender, EventArgs e)
         {
             button1.PerformClick();
-            string[] list = textBox10.Text.Split(',');
+            string[] list = richTextBox1.Text.Split(',');
             using (SqlCommand sqlCommand1 = sqlConnection.CreateCommand())
             {
                 int count = 0;
                 string nameSP = String.Empty;
                 if (textBox9.Text.Contains("800"))
                 {
-                    
+
                     nameSP = "Rep.DEFIR_Report_Charges_8800_RS";
                 }
                 else
                     nameSP = "Rep.DEFIR_Report_Charges_history_RS_slow";
                 using (StreamWriter sw = new StreamWriter("detail.csv"))
                 {
-                    foreach(string item in list)
-                    { 
-                    sqlCommand1.CommandText = $"EXEC {nameSP}\r\n\t\t@start = N'20230101',\r\n\t\t@stop = N'20230331',\r\n\t\t@domain = N'{item}'";
+                    foreach (string item in list)
+                    {
+                        sqlCommand1.CommandText = $"EXEC {nameSP}\r\n\t\t@start = N'20230101',\r\n\t\t@stop = N'20230331',\r\n\t\t@domain = N'{item}'";
                         using (SqlDataReader sqlDataReader = sqlCommand1.ExecuteReader())
                         {
                             //int count2 = 0;
@@ -560,13 +560,127 @@ namespace ConnectDB
                             }
                             */
                         }
-                        
+
                     }
                 }
             }
         }
-    }
 
+        private void button9_Click(object sender, EventArgs e)
+        {
+            button1.PerformClick();
+
+            SqlCommand sqlCommand = sqlConnection.CreateCommand();
+            sqlCommand.CommandText = "" +
+                "SELECT CONCAT(TABLE_SCHEMA,'.',TABLE_NAME)" +
+                "from " +
+                "INFORMATION_SCHEMA.TABLES " +
+                "where " +
+                "TABLE_TYPE = 'BASE TABLE'";
+            getData(sqlCommand, dataGridView2);
+            string tableName = String.Empty;
+            foreach (DataGridViewRow dataGridViewRow in dataGridView2.Rows)
+            {
+                tableName = dataGridViewRow.Cells[0].Value.ToString();
+                sqlCommand.CommandText = "" +
+                        "DECLARE       " +
+                        "@object_name SYSNAME     " +
+                        ", @object_id INT     " +
+                        ", @SQL NVARCHAR(MAX) " +
+                        "SELECT " +
+                        "      @object_name = '' + OBJECT_SCHEMA_NAME(o.[object_id]) + '.' + OBJECT_NAME([object_id]) +'' " +
+                        "    , @object_id = [object_id] " +
+                        $"FROM(SELECT[object_id] = OBJECT_ID('{tableName}', 'U')) o                                      " +
+                        "" +
+                        "SELECT @SQL = 'CREATE TABLE ' + @object_name + CHAR(13) + '(' + CHAR(13) + STUFF((" +
+                        "  SELECT CHAR(13) + '    , ' + c.name + ' ' + " +
+                        "      CASE WHEN c.is_computed = 1 " +
+                        "          THEN 'AS ' + OBJECT_DEFINITION(c.[object_id], c.column_id) " +
+                        "          ELSE " +
+                        "              CASE WHEN c.system_type_id != c.user_type_id " +
+                        "                  THEN '' + SCHEMA_NAME(tp.[schema_id]) + '.' + tp.name + '' " +
+                        "                  ELSE '' + UPPER(tp.name) + '' " +
+                        "              END + " +
+                        "              CASE " +
+                        "                  WHEN tp.name IN('varchar', 'char', 'varbinary', 'binary') " +
+                        "                      THEN '(' + CASE WHEN c.max_length = -1 " +
+                        "                                      THEN 'MAX' " +
+                        "                                      ELSE CAST(c.max_length AS VARCHAR(5)) " +
+                        "                                  END + ')' " +
+                        "                  WHEN tp.name IN('nvarchar', 'nchar') " +
+                        "                      THEN '(' + CASE WHEN c.max_length = -1 " +
+                        "                                      THEN 'MAX' " +
+                        "                    ELSE CAST(c.max_length / 2 AS VARCHAR(5)) " +
+                        "                                  END + ')' " +
+                        "                  WHEN tp.name IN('datetime2', 'time2', 'datetimeoffset') " +
+                        "                      THEN '(' + CAST(c.scale AS VARCHAR(5)) + ')' " +
+                        "                  WHEN tp.name = 'decimal' " +
+                        "                      THEN '(' + CAST(c.[precision] AS VARCHAR(5)) + ',' + CAST(c.scale AS VARCHAR(5)) + ')' " +
+                        "                  ELSE '' " +
+                        "              END + " +
+              /*"              CASE WHEN c.collation_name IS NOT NULL AND c.system_type_id = c.user_type_id " +
+              "                  THEN ' COLLATE ' + c.collation_name " +
+              "                  ELSE '' " +
+              "              END + " +
+              "              CASE WHEN c.is_nullable = 1 " +
+              "                  THEN ' NULL' " +
+              "                  ELSE ' NOT NULL' " +
+              "              END + " +
+              "+ " +
+             "               CASE WHEN c.default_object_id != 0 " +
+             "                  THEN ' CONSTRAINT ' + OBJECT_NAME(c.default_object_id) + '' + " +
+             "                       ' DEFAULT ' + OBJECT_DEFINITION(c.default_object_id) " +
+             "                  ELSE '' " +
+             "              END " +
+             "                 CASE WHEN cc.[object_id] IS NOT NULL " +
+             "                  THEN ' CONSTRAINT ' + cc.name + ' CHECK ' + cc.[definition] " +
+             "                  ELSE '' " +
+             "              END + " +
+             "              CASE WHEN c.is_identity = 1 " +
+             "                  THEN ' IDENTITY(' + CAST(IDENTITYPROPERTY(c.[object_id], 'SeedValue') AS VARCHAR(5)) + ',' + " +
+             "                                  CAST(IDENTITYPROPERTY(c.[object_id], 'IncrementValue') AS VARCHAR(5)) + ')' " +
+             "                  ELSE '' " +
+             "              END  + " + 
+         */  "     '' END " +
+                        "  FROM sys.columns c WITH(NOLOCK) " +
+                        "  JOIN sys.types tp WITH(NOLOCK) ON c.user_type_id = tp.user_type_id " +
+                        "  LEFT JOIN sys.check_constraints cc WITH(NOLOCK) ON c.[object_id] = cc.parent_object_id AND cc.parent_column_id = c.column_id " +
+                        "  WHERE c.[object_id] = @object_id " +
+                        "  ORDER BY c.column_id " +
+                        "  FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 7, '      ') +" +
+                       /* "  ISNULL((SELECT ' " +
+                        "  , CONSTRAINT' + i.name + ' PRIMARY KEY ' + " +
+                        "  CASE WHEN i.index_id = 1 " +
+                        "      THEN 'CLUSTERED' " +
+                        "      ELSE 'NONCLUSTERED' " +
+                        "  END + ' (' + ( " +
+                        " SELECT STUFF(CAST(( " +
+                        "     SELECT ', ' + COL_NAME(ic.[object_id], ic.column_id) + '' + " +
+                        "              CASE WHEN ic.is_descending_key = 1 " +
+                        "                  THEN ' DESC' " +
+                        "                  ELSE '' " +
+                        "              END " +
+                        "      FROM sys.index_columns ic WITH(NOLOCK) " +
+                        "      WHERE i.[object_id] = ic.[object_id] " +
+                        "          AND i.index_id = ic.index_id " +
+                        "      FOR XML PATH(N''), TYPE) AS NVARCHAR(MAX)), 1, 2, '')) +')' " +
+                        "    FROM sys.indexes i WITH(NOLOCK) " +
+                        "   WHERE i.[object_id] = @object_id " +
+                        "AND i.is_primary_key = 1), '') + CHAR(13) + ');
+                       */ "'      )'" +
+                        " select  @SQL";
+                getData(sqlCommand, dataGridView1);
+                richTextBox1.Text = dataGridView1.Rows[0].Cells[0].Value.ToString();
+                richTextBox1.Text = richTextBox1.Text.Replace("     ", Environment.NewLine);
+                if (!Directory.Exists("SQL_files"))
+                    Directory.CreateDirectory("SQL_files");
+                using (StreamWriter sw = new StreamWriter("SQL_Files\\" + tableName + ".sql"))
+                {
+                    sw.WriteLine(richTextBox1.Text);
+                }
+            }
+        }
+    }
 
 }
 
