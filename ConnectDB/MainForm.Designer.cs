@@ -58,6 +58,7 @@
             this.button8 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.button10 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
@@ -319,7 +320,7 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(622, 997);
+            this.button7.Location = new System.Drawing.Point(368, 997);
             this.button7.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(236, 35);
@@ -330,7 +331,7 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(954, 997);
+            this.button8.Location = new System.Drawing.Point(677, 997);
             this.button8.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(236, 35);
@@ -358,11 +359,23 @@
             this.richTextBox1.TabIndex = 32;
             this.richTextBox1.Text = "";
             // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(970, 997);
+            this.button10.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(236, 35);
+            this.button10.TabIndex = 33;
+            this.button10.Text = "Export to PosgreSQL";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1476, 1094);
+            this.Controls.Add(this.button10);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.button9);
             this.Controls.Add(this.button8);
@@ -438,6 +451,7 @@
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.Button button10;
     }
 }
 
