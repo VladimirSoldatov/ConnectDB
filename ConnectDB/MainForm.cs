@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Collections;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ConnectDB
 {
@@ -419,6 +420,9 @@ namespace ConnectDB
             else
                 this.Close();
             comboBox2.SelectedIndex = 0;
+            this.dateTimePicker1.Value = DateTime.Now.AddDays(-DateTime.Now.Day + 1).AddMonths(-3);
+   
+            this.dateTimePicker2.Value = DateTime.Now.AddDays(-DateTime.Now.Day);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -531,7 +535,7 @@ namespace ConnectDB
                 {
                     foreach (string item in list)
                     {
-                        sqlCommand1.CommandText = $"EXEC {nameSP}\r\n\t\t@start = N'20230101',\r\n\t\t@stop = N'20230331',\r\n\t\t@domain = N'{item}'";
+                        sqlCommand1.CommandText = $"EXEC {nameSP}\r\n\t\t@start = N'{dateTimePicker1.Value.ToString("yyyyMMdd")}',\r\n\t\t@stop = N'{dateTimePicker2.Value.ToString("yyyyMMdd")}',\r\n\t\t@domain = N'{item}'";
                         using (SqlDataReader sqlDataReader = sqlCommand1.ExecuteReader())
                         {
                             //int count2 = 0;
@@ -691,7 +695,37 @@ namespace ConnectDB
 
         private void button10_Click(object sender, EventArgs e)
         {
-
+            string curDir = Environment.CurrentDirectory + "\\" + "PS_sql";
+            string oldDir = Environment.CurrentDirectory + "\\" + "SQL_files";
+            if (!Directory.Exists(curDir))
+                Directory.CreateDirectory(curDir);
+            foreach(string file in Directory.EnumerateFiles($"{Directory.GetCurrentDirectory()}" + "\\" + "SQL_files"))
+            {
+                string text = String.Empty;
+       
+                using (StreamReader sr = new StreamReader(file))
+                {
+                    text = sr.ReadToEnd();
+                }
+                Regex regex;
+                string fileName;
+                PosgreSQL posgreSQL = new PosgreSQL();
+                foreach(KeyValuePair<string, string> item in posgreSQL.sqlTypes)
+                {
+                    if(item.Key.Contains("(") && !item.Value.Contains("("))
+                    {
+                        regex = new Regex($"({item.Key.Substring(0,item.Key.IndexOf('('))})[(][0-9]+[)]");
+                        bool ext = regex.IsMatch(text);
+                        text = Regex.Replace(text, regex.ToString(), item.Value);
+                    }
+                }
+                regex = new Regex("[A-Za-z_.0-9]+.(sql)");
+                fileName = regex.Match(file).ToString();
+                using (StreamWriter sw = new StreamWriter(curDir + "\\" + fileName))
+                {
+                    sw.Write(text);
+                }
+            }
 
 
         }
