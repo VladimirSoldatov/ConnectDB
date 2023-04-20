@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Wellcome));
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
@@ -43,8 +44,9 @@
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(258, 186);
+            this.textBox2.Location = new System.Drawing.Point(258, 181);
             this.textBox2.Name = "textBox2";
+            this.textBox2.PasswordChar = '*';
             this.textBox2.Size = new System.Drawing.Size(299, 26);
             this.textBox2.TabIndex = 1;
             // 
@@ -77,10 +79,12 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Wellcome";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Wellcome";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Wellcome_FormClosing);
+            this.Load += new System.EventHandler(this.Wellcome_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

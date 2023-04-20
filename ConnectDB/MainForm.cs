@@ -16,6 +16,8 @@ namespace ConnectDB
     {
         SqlConnection sqlConnection = null;
         List<string> stored = new List<string>();
+        string name = String.Empty;
+        string password = string.Empty;
 
         public MainForm()
         {
@@ -24,23 +26,30 @@ namespace ConnectDB
 
         private void button1_Click(object sender, EventArgs e)
         {
-            using (var item = new Impersonator("vladimir.soldatov", "VATS", "@Altavista1963"))
+            using (var item = new Impersonator(DataBuffer.userName, "VATS", DataBuffer.userPassword))
             {
-
-                sqlConnection = new SqlConnection();
+                try
                 {
-                    string baseName;
-                    if (comboBox2.SelectedItem.ToString() == "i82z0report01.vats.local")
-                        baseName = "webpbxReportDB";
-                    else if (comboBox2.SelectedItem.ToString() == "172.30.34.7")
-                        baseName = "billing_8800";
-                    else
-                        baseName = "billing_federal";
+                    sqlConnection = new SqlConnection();
+                    {
+                        string baseName;
+                        if (comboBox2.SelectedItem.ToString() == "i82z0report01.vats.local")
+                            baseName = "webpbxReportDB";
+                        else if (comboBox2.SelectedItem.ToString() == "172.30.34.7")
+                            baseName = "billing_8800";
+                        else
+                            baseName = "billing_federal";
 
-                    sqlConnection.ConnectionString = $"Server={comboBox2.SelectedItem.ToString()}; Initial Catalog={baseName}; Integrated Security=SSPI;";
+                        sqlConnection.ConnectionString = $"Server={comboBox2.SelectedItem.ToString()}; Initial Catalog={baseName}; Integrated Security=SSPI;";
 
-                    sqlConnection.Open();
+                        sqlConnection.Open();
 
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    OnLoad(e);
                 }
 
             }
