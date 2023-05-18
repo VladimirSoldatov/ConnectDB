@@ -21,8 +21,12 @@ namespace ConnectDB
 
         private void button1_Click(object sender, EventArgs e)
         {
-            result = true;
-            this.Close();
+            if (!String.IsNullOrEmpty(textBox2.Text))
+            {
+                result = true;
+                this.Close();
+            }
+            else MessageBox.Show("Пароль пуст или не введен");
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -52,6 +56,9 @@ namespace ConnectDB
                 {
                     textBox1.Text = sr.ReadLine();
                 }
+            button1.Focus();
         }
+        
+
     }
 }
