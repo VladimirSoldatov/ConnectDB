@@ -17,8 +17,9 @@ namespace ConnectDB
             sqlTypes = new Dictionary<string, string>();
             sqlTypes.Add("DATETIMEOFFSET(n)", "TIMESTAMP(n) WITH TIME ZONE");
             sqlTypes.Add("dbo.domainName", "TEXT");
+            sqlTypes.Add("dbo.domainUserName", "TEXT");
             sqlTypes.Add("dbo.fulldomainusername", "TEXT");
-            sqlTypes.Add("dbo.dbo.fullDomainUserName", "TEXT");
+            sqlTypes.Add("dbo.description, "TEXT");
             sqlTypes.Add("push.deviceToken", "TEXT");
             sqlTypes.Add("push.deviceID", "TEXT");
             sqlTypes.Add("push.deviceModel", "TEXT");
@@ -43,7 +44,6 @@ namespace ConnectDB
             sqlTypes.Add("SMALLMONEY", "TEXT");
             sqlTypes.Add("MONEY", "TEXT");
             sqlTypes.Add("SMALLINT", "SMALLINT");
-            sqlTypes.Add("TINYINT", "SMALLINT");
             sqlTypes.Add("INT", "INT");
             sqlTypes.Add("NUMERIC(n,m)", "NUMERIC(n,m)");
             sqlTypes.Add("DECIMAL(n,m)", "DECIMAL(n,m)");
