@@ -752,6 +752,38 @@ namespace ConnectDB
                 textBox11.Text = posgreSQL.sqlTypes.FirstOrDefault(u => u.Key.Equals(((TextBox)sender).Text)).Value;
 
         }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            button1.PerformClick();
+            int num = 0;
+            using (SqlCommand sqlCommand1 = sqlConnection.CreateCommand())
+            {
+                sqlCommand1.CommandText = "WITH ItemContentBinaries AS\r\n(\r\nSELECT\r\nPath\r\n,CONVERT(varbinary(max),Content) AS Content\r\nFROM ReportServer.dbo.Catalog\r\nWHERE Type IN (2,5,7,8)\r\nand content is not null\r\nand path not Like ('%Data Sources%')\r\nand path not in ('')\r\n),\r\n--The second CTE strips off the BOM if it exists…\r\nItemContentNoBOM AS\r\n(\r\nSELECT\r\nPath\r\n,CASE\r\nWHEN LEFT(Content,3) = 0xEFBBBF\r\nTHEN CONVERT(varchar(max),SUBSTRING(Content,4,LEN(Content)))\r\nELSE\r\nContent\r\nEND AS Content\r\nFROM ItemContentBinaries\r\n)\r\n--–The outer query gets the content in its varbinary, varchar and xml representations…\r\nSELECT\r\nReplace(Path, '/', '\\') AS Path\r\n,CONVERT(varbinary(max),Content) AS ReportData --–varbinary\r\n\r\nFROM ItemContentNoBOM";
+                SqlDataReader sqlDataReader = sqlCommand1.ExecuteReader();
+                string mainDirectory = Environment.GetEnvironmentVariable("USERPROFILE") + "\\ReportServer";
+                if (!Directory.Exists(mainDirectory))
+                    Directory.CreateDirectory(Environment.GetEnvironmentVariable("USERPROFILE") + "\\ReportServer");
+                while (sqlDataReader.Read())
+                {
+                    string[] pathMassive = sqlDataReader.GetString(0).Split('\\');
+                    ArraySegment<string> myPath = new ArraySegment<string>(pathMassive, 1, pathMassive.Length-1);
+                    string pathDirectory = String.Join("\\", myPath);
+                    if (!Directory.Exists(pathDirectory))
+                        Directory.CreateDirectory(pathDirectory);
+                    //Console.WriteLine((++num).ToString() + Directory.GetCurrentDirectory() + sqlDataReader.GetString(0) + ".rdl");
+                    using (StreamWriter streamWriter = new StreamWriter(mainDirectory + "\\" + pathDirectory + ".rdl"))
+                        streamWriter.WriteLine(Encoding.UTF8.GetString((byte[])sqlDataReader.GetValue(1)));
+                    num++;
+                }
+                MessageBox.Show(num.ToString());
+            }
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
 }
