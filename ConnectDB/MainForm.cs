@@ -721,12 +721,34 @@ namespace ConnectDB
                 PosgreSQL posgreSQL = new PosgreSQL();
                 foreach(KeyValuePair<string, string> item in posgreSQL.sqlTypes)
                 {
-                    if(item.Key.Contains("(") && !item.Value.Contains("("))
+                    if (item.Key.Contains("(") && !item.Value.Contains("("))
                     {
-                        regex = new Regex($"({item.Key.Substring(0,item.Key.IndexOf('('))})[(][0-9]+[)]");
+                        regex = new Regex($"({item.Key.Substring(0, item.Key.IndexOf('('))})\\([0-9]+\\)", RegexOptions.IgnoreCase);
                         bool ext = regex.IsMatch(text);
                         text = Regex.Replace(text, regex.ToString(), item.Value);
+                        regex = new Regex($"({item.Key.Substring(0, item.Key.IndexOf('('))})\\([A-Z]+\\)", RegexOptions.IgnoreCase);
+                        text = Regex.Replace(text, regex.ToString(), item.Value);
+
                     }
+                    else
+                    {
+                        if (text.Contains("DATETIMEOFFSET"))
+                        {
+                            regex = new Regex("(DATETIMEOFFSET)\\([0-9+]\\)", RegexOptions.IgnoreCase);
+                            var type = Regex.Match(text, regex.ToString());
+                            regex = new Regex("[0-9]+");
+                            var number = Regex.Match(type.Value, regex.ToString());
+                            regex = new Regex($"({item.Key.Substring(0, item.Key.IndexOf('('))})\\([0-9]+\\)", RegexOptions.IgnoreCase);
+                            text = Regex.Replace(text, regex.ToString(), $"TIMESTAMP({number.Value}) WITH TIME ZONE");
+                        }
+                        else
+                        
+                        regex = new Regex($"({item.Key})");
+                    }
+                        text = Regex.Replace(text, regex.ToString(), item.Value, RegexOptions.IgnoreCase);
+                        text = Regex.Replace(text, "\n", string.Empty);
+                        text = Regex.Replace(text, "  ", " ");
+                        text = Regex.Replace(text, "\t", string.Empty);
                 }
                 regex = new Regex("[A-Za-z_.0-9]+.(sql)");
                 fileName = regex.Match(file).ToString();

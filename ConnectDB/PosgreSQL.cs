@@ -13,22 +13,33 @@ namespace ConnectDB
 
         public PosgreSQL()
         {
+            //push.deviceToken
             sqlTypes = new Dictionary<string, string>();
+            sqlTypes.Add("DATETIMEOFFSET(n)", "TIMESTAMP(n) WITH TIME ZONE");
+            sqlTypes.Add("dbo.domainName", "TEXT");
+            sqlTypes.Add("dbo.fulldomainusername", "TEXT");
+            sqlTypes.Add("dbo.dbo.fullDomainUserName", "TEXT");
+            sqlTypes.Add("push.deviceToken", "TEXT");
+            sqlTypes.Add("push.deviceID", "TEXT");
+            sqlTypes.Add("push.deviceModel", "TEXT");
+            sqlTypes.Add("dbo.bill_money", "TEXT"); //TINYINT
             sqlTypes.Add("BIGINT", "BIGINT");
-            sqlTypes.Add("BINARY(n)", "BYTEA");
+            sqlTypes.Add("TINYINT", "INT");
             sqlTypes.Add("VARBINARY(n)", "BYTEA");
-            sqlTypes.Add("VARBINARY(max)", "BYTEA");
+            sqlTypes.Add("NVARCHAR(MAX)", "TEXT");
+            sqlTypes.Add("NVARCHAR(n)", "TEXT");
+            sqlTypes.Add("VARBINARY(MAX)", "BYTEA");
+            sqlTypes.Add("BINARY(n)", "BYTEA");
+            sqlTypes.Add("VARCHAR(n)", "TEXT");
+            sqlTypes.Add("VARCHAR", "TEXT");
+            sqlTypes.Add("NCHAR(n)", "TEXT");
+            sqlTypes.Add("CHAR(n)", "TEXT");
             sqlTypes.Add("ROWVERSION(n)", "BYTEA");
             sqlTypes.Add("IMAGE", "BYTEA");
             sqlTypes.Add("FIELDHIERARCHYID", "BYTEA");
             sqlTypes.Add("BIT", "BOOL");
-            sqlTypes.Add("NVARCHAR(max)", "TEXT");
-            sqlTypes.Add("NVARCHAR(n)", "TEXT");
-            sqlTypes.Add("VARCHAR(max)", "TEXT");
-            sqlTypes.Add("VARCHAR(n)", "TEXT");
-            sqlTypes.Add("NCHAR(n)", "TEXT");
-            sqlTypes.Add("CHAR(n)", "TEXT");
             sqlTypes.Add("TEXT", "TEXT");
+            sqlTypes.Add("NTEXT", "TEXT");
             sqlTypes.Add("SMALLMONEY", "TEXT");
             sqlTypes.Add("MONEY", "TEXT");
             sqlTypes.Add("SMALLINT", "SMALLINT");
@@ -39,12 +50,13 @@ namespace ConnectDB
             sqlTypes.Add("REAL", "REAL");
             sqlTypes.Add("UNIQUEIDENTIFIERUNIQUEIDENTIFIER", "UUID");
             sqlTypes.Add("SMALLDATETIME", "TIMESTAMP(0)");
-            sqlTypes.Add("DATETIMEOFFSET(n)", "TIMESTAMP(n) WITH TIME ZONE");
-            sqlTypes.Add("DATETIME2(n)", "TIMESTAMP(m)");
+            sqlTypes.Add("DATETIME2", "TIMESTAMP");
             sqlTypes.Add("DATETIME", "TIMESTAMP(3)");
             sqlTypes.Add("DATE", "DATE");
             sqlTypes.Add("TIME(n)", "TIME(n)");
             sqlTypes.Add("XML", "XML");
+            sqlTypes.Add("sys.sysname", "VARCHAR");
+            sqlTypes.Add("UNIQUEIDENTIFIER", "uuid");
             sqlOperator = new Dictionary<string, string>();
             sqlOperator.Add("TOP(n)", "LIMIT n");
             sqlOperator.Add("OFFSET n ROW FETCH NEXT m ROWS ONLY", "LIMIT n OFSETT n");
