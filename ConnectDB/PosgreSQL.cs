@@ -19,7 +19,7 @@ namespace ConnectDB
             sqlTypes.Add("dbo.domainName", "TEXT");
             sqlTypes.Add("dbo.domainUserName", "TEXT");
             sqlTypes.Add("dbo.fulldomainusername", "TEXT");
-            sqlTypes.Add("dbo.description, "TEXT");
+            sqlTypes.Add("dbo.description", "TEXT");
             sqlTypes.Add("push.deviceToken", "TEXT");
             sqlTypes.Add("push.deviceID", "TEXT");
             sqlTypes.Add("push.deviceModel", "TEXT");
