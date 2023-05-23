@@ -706,6 +706,24 @@ namespace ConnectDB
         {
             string curDir = Environment.CurrentDirectory + "\\" + "PS_sql";
             string oldDir = Environment.CurrentDirectory + "\\" + "SQL_files";
+            if (!String.IsNullOrEmpty(textBox12.Text) && !String.IsNullOrEmpty(richTextBox1.Text))
+            {
+                curDir = textBox12.Text;
+                string text = richTextBox1.Text;
+                text = text.Replace("[", "").Replace("]", "").Replace("N'", "'").Replace("SET IDENTITY", "").Replace("INSERT", ";" +"?" +"INSERT INTO")
+                    .Replace("\n", " ").Replace("\r","").Replace("\t", "").Replace(" ,", ",").Replace("  ", " ").Replace("GO", " ");
+                var listText = text.Split('?');
+                using (StreamWriter sw = new StreamWriter($"{textBox12.Text}\\current.sql"))
+                {
+                   foreach(string item in listText)
+                    {
+                        if (item.Contains("USE"))
+                            continue;
+                        sw.WriteLine(item);
+                    }
+                }
+                    return;
+            }
             if (!Directory.Exists(curDir))
                 Directory.CreateDirectory(curDir);
             foreach(string file in Directory.EnumerateFiles($"{Directory.GetCurrentDirectory()}" + "\\" + "SQL_files"))
@@ -750,6 +768,7 @@ namespace ConnectDB
                         text = Regex.Replace(text, "  ", " ");
                         text = Regex.Replace(text, "\t", string.Empty);
                 }
+                text = text.Replace("N'", "'");
                 regex = new Regex("[A-Za-z_.0-9]+.(sql)");
                 fileName = regex.Match(file).ToString();
                 using (StreamWriter sw = new StreamWriter(curDir + "\\" + fileName))
