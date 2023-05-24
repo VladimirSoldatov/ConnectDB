@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace ConnectDB
 {
@@ -33,14 +34,12 @@ namespace ConnectDB
                     sqlConnection = new SqlConnection();
                     {
                         string baseName;
-                        if (comboBox2.SelectedItem.ToString() == "i82z0report01.vats.local")
-                            baseName = "webpbxReportDB";
-                        else if (comboBox2.SelectedItem.ToString() == "172.30.34.7")
-                            baseName = "billing_8800";
+                        if (comboBox2.SelectedItem == null)
+                            baseName = "master";
                         else
-                            baseName = "billing_federal";
+                            baseName = comboBox2.SelectedItem.ToString();
 
-                        sqlConnection.ConnectionString = $"Server={comboBox2.SelectedItem.ToString()}; Initial Catalog={baseName}; Integrated Security=SSPI;";
+                        sqlConnection.ConnectionString = $"Server={comboBox1.SelectedItem.ToString()}; Initial Catalog={baseName}; Integrated Security=SSPI;";
 
                         sqlConnection.Open();
 
@@ -428,7 +427,7 @@ namespace ConnectDB
             }
             else
                 this.Close();
-            comboBox2.SelectedIndex = 0;
+            comboBox1.SelectedIndex = 0;
             this.dateTimePicker1.Value = DateTime.Now.AddDays(-DateTime.Now.Day + 1).AddMonths(-3);
    
             this.dateTimePicker2.Value = DateTime.Now.AddDays(-DateTime.Now.Day);
@@ -592,7 +591,7 @@ namespace ConnectDB
             button1.PerformClick();
 
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
-            sqlCommand.CommandText = "" +
+            sqlCommand.CommandText = ""+
                 "SELECT CONCAT(TABLE_SCHEMA,'.',TABLE_NAME)" +
                 "from " +
                 "INFORMATION_SCHEMA.TABLES " +
@@ -711,13 +710,15 @@ namespace ConnectDB
                 curDir = textBox12.Text;
                 string text = richTextBox1.Text;
                 text = text.Replace("[", "").Replace("]", "").Replace("N'", "'").Replace("SET IDENTITY", "").Replace("INSERT", ";" +"?" +"INSERT INTO")
-                    .Replace("\n", " ").Replace("\r","").Replace("\t", "").Replace(" ,", ",").Replace("  ", " ").Replace("GO", " ");
+                    .Replace("\n", " ").Replace("\r","").Replace("\t", "").Replace(" ,", ",").Replace("  ", " ").Replace("GO", " ")
+                    .Replace("( ","(").Replace(" )", ")").Replace(" ,", ",").Replace("_;", ";").Replace(" ;", ";");
+
                 var listText = text.Split('?');
                 using (StreamWriter sw = new StreamWriter($"{textBox12.Text}\\current.sql"))
                 {
                    foreach(string item in listText)
                     {
-                        if (item.Contains("USE"))
+                        if (item.Contains("USE")|| item.Contains("USE")|| item.Contains("ON") || item.Contains("OFF") || item.Contains("DELETE"))
                             continue;
                         sw.WriteLine(item);
                     }
@@ -824,6 +825,61 @@ namespace ConnectDB
         private void button12_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            button1.PerformClick();
+            SqlCommand sqlCommand = sqlConnection.CreateCommand();
+            sqlCommand.CommandText = "" +
+            "SELECT " +
+            "dbid, name " +
+            "FROM " +
+            "master.dbo.sysdatabases";
+            using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+            {
+                comboBox2.Items.Clear();
+                if (sqlDataReader.HasRows)
+                {
+                    while (sqlDataReader.Read())
+                    {
+                       // if(sqlDataReader.GetInt16(0)>4)
+                        comboBox2.Items.Add(sqlDataReader.GetSqlString(1));
+                    }
+      
+                    comboBox2.SelectedIndex = 0;
+
+                }
+            }
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            richTextBox1.Text = String.Empty;
+
+            Thread thread = new Thread(new ThreadStart(() =>
+                {
+                int i = 0;
+                    string text = String.Empty;
+                var lines = File.ReadLines(textBox12.Text + "\\script.sql");
+                decimal count = lines.Count();
+                    foreach (string line in lines)
+                    {
+                        text += line + Environment.NewLine;
+                        i++;
+                        label10.Text = String.Format("{0}%", ((i / count) * 100).ToString("0.00"));
+                        progressBar1.Value = Convert.ToInt32((i / count) * 100);
+
+                    }
+                    richTextBox1.Text = text;
+                }
+                ));
+            thread.Start();
         }
     }
 
