@@ -711,7 +711,7 @@ namespace ConnectDB
                 string text = richTextBox1.Text;
                 text = text.Replace("[", "").Replace("]", "").Replace("N'", "'").Replace("SET IDENTITY", "").Replace("INSERT", ";" +"?" +"INSERT INTO")
                     .Replace("\n", " ").Replace("\r","").Replace("\t", "").Replace(" ,", ",").Replace("  ", " ").Replace("GO", " ")
-                    .Replace("( ","(").Replace(" )", ")").Replace(" ,", ",").Replace("_;", ";").Replace(" ;", ";");
+                    .Replace("( ","(").Replace(" )", ")").Replace(" ,", ",").Replace("_;", ";").Replace(" ;", ";").Replace("DATETIMEOFFSET", "timestamptz(6)");
 
                 var listText = text.Split('?');
                 using (StreamWriter sw = new StreamWriter($"{textBox12.Text}\\current.sql"))
