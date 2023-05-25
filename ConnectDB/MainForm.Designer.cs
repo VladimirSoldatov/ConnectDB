@@ -167,7 +167,7 @@ namespace ConnectDB
             this.textBox3.Size = new System.Drawing.Size(244, 26);
             this.textBox3.TabIndex = 8;
             // 
-            // textBox4
+            // textBox4t
             // 
             this.textBox4.Location = new System.Drawing.Point(494, 695);
             this.textBox4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -440,7 +440,7 @@ namespace ConnectDB
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new System.Drawing.Size(244, 26);
             this.textBox12.TabIndex = 40;
-            this.textBox12.Text = "C:\\Users\\admin\\Desktop";
+            this.textBox12.Text = Environment.GetEnvironmentVariable("USERPROFILE") +"\\Desktop";
             // 
             // label9
             // 
