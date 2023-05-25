@@ -73,6 +73,7 @@ namespace ConnectDB
             this.button13 = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.button14 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
@@ -167,7 +168,7 @@ namespace ConnectDB
             this.textBox3.Size = new System.Drawing.Size(244, 26);
             this.textBox3.TabIndex = 8;
             // 
-            // textBox4t
+            // textBox4
             // 
             this.textBox4.Location = new System.Drawing.Point(494, 695);
             this.textBox4.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -440,7 +441,7 @@ namespace ConnectDB
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new System.Drawing.Size(244, 26);
             this.textBox12.TabIndex = 40;
-            this.textBox12.Text = Environment.GetEnvironmentVariable("USERPROFILE") +"\\Desktop";
+            this.textBox12.Text = "C:\\Users\\admin\\Desktop";
             // 
             // label9
             // 
@@ -495,11 +496,23 @@ namespace ConnectDB
             this.progressBar1.Size = new System.Drawing.Size(247, 27);
             this.progressBar1.TabIndex = 45;
             // 
+            // button14
+            // 
+            this.button14.Location = new System.Drawing.Point(1475, 956);
+            this.button14.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.button14.Name = "button14";
+            this.button14.Size = new System.Drawing.Size(134, 35);
+            this.button14.TabIndex = 46;
+            this.button14.Text = "Load  script.sql";
+            this.button14.UseVisualStyleBackColor = true;
+            this.button14.Click += new System.EventHandler(this.button14_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1664, 1094);
+            this.Controls.Add(this.button14);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.button13);
@@ -601,6 +614,7 @@ namespace ConnectDB
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Button button14;
     }
 }
 
