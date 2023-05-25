@@ -446,6 +446,8 @@ namespace ConnectDB
                     sw.WriteLine(item);
 
             }
+            if (thread != null)
+                thread.Abort();
         }
 
 
@@ -864,34 +866,35 @@ namespace ConnectDB
 
             thread = new Thread(new ThreadStart(() =>
                {
-                   int i = 0;
-                   string text = String.Empty;
-                   var lines = File.ReadLines(textBox12.Text + "\\script.sql");
-                   decimal count = lines.Count();
-                   foreach (string line in lines)
+                   int i = 1;
+                   File.Delete($"{textBox12.Text}\\current.sql");
+                   using (StreamWriter sw = new StreamWriter($"{textBox12.Text}\\current.sql"))
                    {
-                       text = line + Environment.NewLine;
-                       i++;
-
-                       label10.Text = $"{(i / count * 100).ToString("0.00")}%";
-                       text = text.Replace("[", "").Replace("]", "").Replace("N'", "'").Replace("INSERT", "INSERT INTO")
-                       .Replace("\n", " ").Replace("\r", "").Replace("\t", "").Replace(" ,", ",").Replace("  ", " ")
-                       .Replace("( ", "(").Replace(" )", ")").Replace(" ,", ",").Replace("_;", ";").Replace(" ;", ";").Replace("DateTimeOffset", "timestamptz(6)");
-
-
-                       using (StreamWriter sw = new StreamWriter($"{textBox12.Text}\\current.sql",true))
+                       int j = 0;
+                       string text = String.Empty;
+                       IEnumerable<string> lines = File.ReadLines(textBox12.Text + "\\script.sql");
+                       decimal count = lines.Count();
+                 
+                       foreach (string line in lines)
                        {
+                           
+                           i++;
 
-                           if (text.Contains("USE") || text.Contains("GO") || text.Contains("ON") || text.Contains("OFF") || text.Contains("DELETE")|| text.Contains("SET"))
-                               continue;
-                           sw.WriteLine(text);
-             
+                           label10.Text = $"{(i / count * 100).ToString("0.00")}%";
+                           text = line.Replace("[", "").Replace("]", "").Replace("N'", "'").Replace("INSERT", "INSERT INTO")
+                           .Replace("\t", "").Replace(" ,", ",").Replace("  ", " ")
+                           .Replace("( ", "(").Replace(" )", ")").Replace(" ,", ",").Replace("_;", ";").Replace(" ;", ";").Replace("DateTimeOffset", "timestamptz(6)");
 
+
+                           {
+                               if (text.Contains("USE") || text == "" || text.Contains("GO") || text.Contains("ON") || text.Contains("OFF") || text.Contains("DELETE") || text.Contains("SET"))
+                                   continue;
+                               sw.WriteLine(text);
+                               j++;
+                           }
 
 
                        }
-
-
                    }
                }
                 
@@ -901,6 +904,7 @@ namespace ConnectDB
 
         private void button14_Click(object sender, EventArgs e)
         {
+            if(thread != null)
             thread.Abort();
         }
   
