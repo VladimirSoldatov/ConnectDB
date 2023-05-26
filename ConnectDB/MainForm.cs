@@ -429,7 +429,7 @@ namespace ConnectDB
                 this.Close();
             comboBox1.SelectedIndex = 0;
             this.dateTimePicker1.Value = DateTime.Now.AddDays(-DateTime.Now.Day + 1).AddMonths(-3);
-   
+            textBox12.Text = Environment.GetEnvironmentVariable("USERPROFILE") + "\\DESKTOP";
             this.dateTimePicker2.Value = DateTime.Now.AddDays(-DateTime.Now.Day);
         }
 
@@ -907,7 +907,6 @@ namespace ConnectDB
             if(thread != null)
             thread.Abort();
         }
-  
     }
 
 }

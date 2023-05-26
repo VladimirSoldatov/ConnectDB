@@ -436,12 +436,11 @@ namespace ConnectDB
             // 
             // textBox12
             // 
-            this.textBox12.Location = new System.Drawing.Point(1407, 857);
+            this.textBox12.Location = new System.Drawing.Point(1408, 856);
             this.textBox12.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new System.Drawing.Size(244, 26);
             this.textBox12.TabIndex = 40;
-            this.textBox12.Text = "C:\\Users\\admin\\Desktop";
             // 
             // label9
             // 
