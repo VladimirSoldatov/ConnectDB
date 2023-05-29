@@ -430,7 +430,7 @@ namespace ConnectDB
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(134, 35);
             this.button12.TabIndex = 39;
-            this.button12.Text = "Save VDL";
+            this.button12.Text = "BLANK";
             this.button12.UseVisualStyleBackColor = true;
             this.button12.Click += new System.EventHandler(this.button12_Click);
             // 
@@ -502,7 +502,7 @@ namespace ConnectDB
             this.button14.Name = "button14";
             this.button14.Size = new System.Drawing.Size(134, 35);
             this.button14.TabIndex = 46;
-            this.button14.Text = "Load  script.sql";
+            this.button14.Text = "Stop Thread";
             this.button14.UseVisualStyleBackColor = true;
             this.button14.Click += new System.EventHandler(this.button14_Click);
             // 

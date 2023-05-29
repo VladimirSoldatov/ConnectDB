@@ -89,17 +89,21 @@ namespace ConnectDB
             string curPath = String.Empty;
             getData(sqlCommand, dataGridView1);
             string path = String.Empty;
-            if (comboBox2.SelectedItem.ToString() == "i82z0report01.vats.local")
+            if (comboBox1.SelectedItem.ToString() == "i82z0report01.vats.local")
                 path = "WebRS";
             else
                 path = "Billing";
             distributive = $"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs";
             curPath = distributive + "\\" + path;
+  
             if (!Directory.Exists(distributive))
                 Directory.CreateDirectory(distributive);
+            if (Directory.Exists(curPath))
+                Directory.Delete(curPath,true);
             if (!Directory.Exists(curPath))
                 Directory.CreateDirectory(curPath);
 
+           
 
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
@@ -431,6 +435,8 @@ namespace ConnectDB
             this.dateTimePicker1.Value = DateTime.Now.AddDays(-DateTime.Now.Day + 1).AddMonths(-3);
             textBox12.Text = Environment.GetEnvironmentVariable("USERPROFILE") + "\\DESKTOP";
             this.dateTimePicker2.Value = DateTime.Now.AddDays(-DateTime.Now.Day);
+            comboBox1_SelectedIndexChanged(sender, e);
+
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
