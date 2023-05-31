@@ -914,10 +914,11 @@ namespace ConnectDB
             thread = new Thread(new ThreadStart(() =>
                {
                    int i = 1;
+                   int j = 1;
                    File.Delete($"{textBox12.Text}\\current.sql");
                    using (StreamWriter sw = new StreamWriter($"{textBox12.Text}\\current.sql"))
                    {
-                       int j = 0;
+             
                        string text = String.Empty;
                        IEnumerable<string> lines = File.ReadLines(textBox12.Text + "\\script.sql");
                        decimal count = lines.Count();
@@ -943,6 +944,7 @@ namespace ConnectDB
 
                        }
                    }
+                   richTextBox1.Text = $"Исходных строк {i}, ";
                }
                 
                 ));
