@@ -295,6 +295,8 @@ namespace ConnectDB
             // comboBox2
             // 
             this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "master"});
             this.comboBox2.Location = new System.Drawing.Point(587, 849);
             this.comboBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.comboBox2.Name = "comboBox2";

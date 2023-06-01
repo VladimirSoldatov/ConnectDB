@@ -29,25 +29,47 @@ namespace ConnectDB
         {
             using (var item = new Impersonator(DataBuffer.userName, "VATS", DataBuffer.userPassword))
             {
+                List<string> dtBases = new List<string>();
                 try
                 {
                     sqlConnection = new SqlConnection();
+
                     {
-                        string baseName;
-                        if (comboBox2.SelectedItem == null)
-                            baseName = "master";
-                        else
-                            baseName = comboBox2.SelectedItem.ToString();
+                        string baseName = "master";
+
 
                         sqlConnection.ConnectionString = $"Server={comboBox1.SelectedItem.ToString()}; Initial Catalog={baseName}; Integrated Security=SSPI;";
-
                         sqlConnection.Open();
+                        SqlCommand sqlCommand = sqlConnection.CreateCommand();
+                        sqlCommand.CommandText = "" +
+                                                "SELECT " +
+                                                "dbid, name " +
+                                                "FROM " +
+                                                "dbo.sysdatabases";
+
+                        using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                        {
+                            if (sqlDataReader.HasRows)
+                            {
+                                while (sqlDataReader.Read())
+                                {
+                                    dtBases.Add(sqlDataReader.GetString(1));
+                                }
+
+                            }
+                        }
+                        if (dtBases.Contains(comboBox2.Text))
+                        {
+                            sqlCommand.CommandText = $"use {comboBox2.Text}";
+                            sqlCommand.ExecuteNonQuery();
+                        }
 
                     }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    sqlConnection.Close();
                     OnLoad(e);
                 }
 
@@ -95,15 +117,15 @@ namespace ConnectDB
                 path = "Billing";
             distributive = $"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs";
             curPath = distributive + "\\" + path;
-  
+
             if (!Directory.Exists(distributive))
                 Directory.CreateDirectory(distributive);
             if (Directory.Exists(curPath))
-                Directory.Delete(curPath,true);
+                Directory.Delete(curPath, true);
             if (!Directory.Exists(curPath))
                 Directory.CreateDirectory(curPath);
 
-           
+
 
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
@@ -249,37 +271,39 @@ namespace ConnectDB
 
         private void button5_Click(object sender, EventArgs e)
         {
+            button1.PerformClick();
             try
             {
 
-                sqlConnection = new SqlConnection();
+                /*              sqlConnection = new SqlConnection();
+                              {
+                                  sqlConnection.ConnectionString = $"Server={comboBox1.SelectedItem.ToString()}; Initial Catalog={comboBox2.SelectedItem.ToString()}; Integrated Security=SSPI;";
+                                  sqlConnection.Open();*/
+                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                 {
-                    sqlConnection.ConnectionString = "Server=localhost; Initial Catalog=master; Integrated Security=SSPI;";
-                    sqlConnection.Open();
-                    using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
-                    {
-                        sqlCommand.CommandText = "" +
-                            "SELECT " +
-                            "database_id AS[ID]" +
-                          ", name AS[Название]" +
-                          ", CONVERT(CHAR(10), create_date, 104) AS[Дата создания]" +
-                          ", state_desc AS[Статус]" +
-                          ", compatibility_level AS[Уровень совместимости]" +
-                          ", recovery_model_desc AS[Модель восстановления] " +
-                          "  FROM " +
-                          "sys.databases";
-                        getData(sqlCommand, dataGridView1);
-                    }
-
+                    sqlCommand.CommandText = "" +
+                        "SELECT " +
+                        "database_id AS[ID]" +
+                      ", name AS[Название]" +
+                      ", CONVERT(CHAR(10), create_date, 104) AS[Дата создания]" +
+                      ", state_desc AS[Статус]" +
+                      ", compatibility_level AS[Уровень совместимости]" +
+                      ", recovery_model_desc AS[Модель восстановления] " +
+                      "  FROM " +
+                      "sys.databases";
+                    getData(sqlCommand, dataGridView1);
                 }
+
             }
+
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-
-
         }
+    
+
+        
         private void getData(SqlCommand sqlCommand, object temp)
         {
 
@@ -806,21 +830,38 @@ namespace ConnectDB
         private void button11_Click(object sender, EventArgs e)
         {
             button1.PerformClick();
+            for (int i = 0; i<comboBox1.Items.Count; i++)
+            {
+                if(comboBox1.Items[i].ToString() == "i82z0report01.vats.local")
+                {
+                    comboBox1.SelectedItem = comboBox1.Items[i];
+                }
+            }
+            for (int i = 0; i < comboBox2.Items.Count; i++)
+            {
+                if (comboBox2.Items[i].ToString() == "ReportServer")
+                {
+                    comboBox2.SelectedItem = comboBox2.Items[i];
+                }
+            }
+       
+            
             int num = 0;
             using (SqlCommand sqlCommand1 = sqlConnection.CreateCommand())
             {
                 sqlCommand1.CommandText = "WITH ItemContentBinaries AS\r\n(\r\nSELECT\r\nPath\r\n,CONVERT(varbinary(max),Content) AS Content\r\nFROM ReportServer.dbo.Catalog\r\nWHERE Type IN (2,5,7,8)\r\nand content is not null\r\nand path not Like ('%Data Sources%')\r\nand path not in ('')\r\n),\r\n--The second CTE strips off the BOM if it exists…\r\nItemContentNoBOM AS\r\n(\r\nSELECT\r\nPath\r\n,CASE\r\nWHEN LEFT(Content,3) = 0xEFBBBF\r\nTHEN CONVERT(varchar(max),SUBSTRING(Content,4,LEN(Content)))\r\nELSE\r\nContent\r\nEND AS Content\r\nFROM ItemContentBinaries\r\n)\r\n--–The outer query gets the content in its varbinary, varchar and xml representations…\r\nSELECT\r\nReplace(Path, '/', '\\') AS Path\r\n,CONVERT(varbinary(max),Content) AS ReportData --–varbinary\r\n\r\nFROM ItemContentNoBOM";
                 SqlDataReader sqlDataReader = sqlCommand1.ExecuteReader();
-                string mainDirectory = Environment.GetEnvironmentVariable("USERPROFILE") + "\\ReportServer";
-                if (!Directory.Exists(mainDirectory))
-                    Directory.CreateDirectory(Environment.GetEnvironmentVariable("USERPROFILE") + "\\ReportServer");
+                string mainDirectory = Environment.GetEnvironmentVariable("USERPROFILE") + "\\DESKTOP\\ReportServer";
+                 if (!Directory.Exists(mainDirectory))
+                    Directory.CreateDirectory(Environment.GetEnvironmentVariable("USERPROFILE") + "\\DESKTOP\\ReportServer");
                 while (sqlDataReader.Read())
                 {
                     string[] pathMassive = sqlDataReader.GetString(0).Split('\\');
                     ArraySegment<string> myPath = new ArraySegment<string>(pathMassive, 1, pathMassive.Length-1);
                     string pathDirectory = String.Join("\\", myPath);
-                    if (!Directory.Exists(pathDirectory))
-                        Directory.CreateDirectory(pathDirectory);
+                    string parrentDir = mainDirectory + "\\" + pathDirectory.Substring(0, pathDirectory.LastIndexOf("\\"));
+                    if (!Directory.Exists(parrentDir))
+                        Directory.CreateDirectory(parrentDir);
                     //Console.WriteLine((++num).ToString() + Directory.GetCurrentDirectory() + sqlDataReader.GetString(0) + ".rdl");
                     using (StreamWriter streamWriter = new StreamWriter(mainDirectory + "\\" + pathDirectory + ".rdl"))
                         streamWriter.WriteLine(Encoding.UTF8.GetString((byte[])sqlDataReader.GetValue(1)));
