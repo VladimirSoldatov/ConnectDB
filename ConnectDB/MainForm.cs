@@ -182,8 +182,7 @@ namespace ConnectDB
 
         private void button4_Click(object sender, EventArgs e)
         {
-            if (sqlConnection == null)
-                button1.PerformClick();
+            button1.PerformClick();
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
 
             try
