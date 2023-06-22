@@ -50,7 +50,7 @@ namespace ConnectDB
         {
             string path = String.Empty;
             path = Environment.GetEnvironmentVariable("USERPROFILE");
-            path += "\\Desktop\\myName.txt";
+            path += "\\Desktop\\MyName.txt";
             if(File.Exists(path))
                 using (StreamReader sr = new StreamReader(path))
                 {
