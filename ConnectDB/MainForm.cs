@@ -96,7 +96,7 @@ namespace ConnectDB
             }
             if (!String.IsNullOrEmpty(textBox1.Text) && String.IsNullOrEmpty(textBox2.Text))
             {
-                sqlCommand.CommandText += $"name={textBox1.Text} ";
+                sqlCommand.CommandText += $"name like '%{textBox1.Text}%' ";
             }
             if (!String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
             {
@@ -352,12 +352,12 @@ namespace ConnectDB
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message + " \n " + ex.HResult + " \n " + ex.Source + " \n " + ex.StackTrace + " \n " + ex.HelpLink + " \n " + ex.Data.ToString());
-
+                /*
                 foreach (DictionaryEntry kvp in ex.Data)
                 {
                     MessageBox.Show(kvp.Key + "  " + kvp.Value);
                 }
-
+                */
 
             }
         }
