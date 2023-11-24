@@ -241,7 +241,7 @@ namespace ConnectDB
             // button5
             // 
             this.button5.Location = new System.Drawing.Point(566, 392);
-            this.button5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button5.Margin = new System.Windows.Forms.Padding(2);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(141, 23);
             this.button5.TabIndex = 19;
@@ -259,7 +259,7 @@ namespace ConnectDB
             // button6
             // 
             this.button6.Location = new System.Drawing.Point(560, 509);
-            this.button6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button6.Margin = new System.Windows.Forms.Padding(2);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(141, 25);
             this.button6.TabIndex = 21;
@@ -341,7 +341,7 @@ namespace ConnectDB
             // richTextBox1
             // 
             this.richTextBox1.Location = new System.Drawing.Point(12, 579);
-            this.richTextBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.richTextBox1.Margin = new System.Windows.Forms.Padding(2);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(956, 53);
             this.richTextBox1.TabIndex = 32;
@@ -360,7 +360,7 @@ namespace ConnectDB
             // textBox10
             // 
             this.textBox10.Location = new System.Drawing.Point(565, 448);
-            this.textBox10.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox10.Margin = new System.Windows.Forms.Padding(2);
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new System.Drawing.Size(137, 20);
             this.textBox10.TabIndex = 34;
@@ -369,7 +369,7 @@ namespace ConnectDB
             // textBox11
             // 
             this.textBox11.Location = new System.Drawing.Point(767, 448);
-            this.textBox11.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox11.Margin = new System.Windows.Forms.Padding(2);
             this.textBox11.Multiline = true;
             this.textBox11.Name = "textBox11";
             this.textBox11.Size = new System.Drawing.Size(137, 18);
@@ -378,7 +378,7 @@ namespace ConnectDB
             // dateTimePicker1
             // 
             this.dateTimePicker1.Location = new System.Drawing.Point(968, 469);
-            this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(2);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(135, 20);
             this.dateTimePicker1.TabIndex = 36;
@@ -386,7 +386,7 @@ namespace ConnectDB
             // dateTimePicker2
             // 
             this.dateTimePicker2.Location = new System.Drawing.Point(968, 515);
-            this.dateTimePicker2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dateTimePicker2.Margin = new System.Windows.Forms.Padding(2);
             this.dateTimePicker2.Name = "dateTimePicker2";
             this.dateTimePicker2.Size = new System.Drawing.Size(135, 20);
             this.dateTimePicker2.TabIndex = 37;
@@ -407,7 +407,7 @@ namespace ConnectDB
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(89, 23);
             this.button12.TabIndex = 39;
-            this.button12.Text = "Save VDL";
+            this.button12.Text = "Кнопка";
             this.button12.UseVisualStyleBackColor = true;
             this.button12.Click += new System.EventHandler(this.button12_Click);
             // 
@@ -465,7 +465,7 @@ namespace ConnectDB
             // progressBar1
             // 
             this.progressBar1.Location = new System.Drawing.Point(935, 425);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(165, 18);
             this.progressBar1.TabIndex = 45;
