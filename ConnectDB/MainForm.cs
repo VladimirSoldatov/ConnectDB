@@ -10,6 +10,8 @@ using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Net;
+
 
 namespace ConnectDB
 {
@@ -33,12 +35,31 @@ namespace ConnectDB
                 try
                 {
                     sqlConnection = new SqlConnection();
+                    Dictionary<string, string> ip_pool = new Dictionary<string, string>();
+                    ip_pool.Add("i82z0report01.vats.local", "10.243.32.196");
+                    ip_pool.Add("p0a8i82z0db01.vats.local", "10.243.32.164");
+                    ip_pool.Add("p0a8i82z0db02.vats.local", "10.243.32.165");
+                    ip_pool.Add("p0a8i82z1bps01.vats.local", "10.243.32.230");
+                    ip_pool.Add("p0a8i82z1bps02.vats.local", "10.243.32.230");
+                    ip_pool.Add("p0a8i82z2bps01.vats.local", "10.243.33.54");
+                    ip_pool.Add("p0a8i82z2bps02.vats.local", "10.243.33.54");
 
                     {
                         string baseName = "master";
+                        string host = String.Empty;
+                        if (Regex.IsMatch(comboBox1.SelectedItem.ToString(), @"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$"))
+                        {
+                            //Network.PTRLookup(comboBox1.SelectedItem.ToString());
+                            //IPAddress address = IPAddress.Parse(comboBox1.SelectedItem.ToString());
+                            //host = Dns.GetHostByName(address.ToString()).HostName;
+   
+                                host = ip_pool.Keys.Where(s => ip_pool[s] == comboBox1.SelectedItem.ToString()).FirstOrDefault();
+                        }
+                        else
+                            host = comboBox1.SelectedItem.ToString();
 
 
-                        sqlConnection.ConnectionString = $"Server={comboBox1.SelectedItem.ToString()}; Initial Catalog={baseName}; Integrated Security=SSPI;";
+                        sqlConnection.ConnectionString = $"Server={host}; Initial Catalog={baseName}; Integrated Security=SSPI;";
                         sqlConnection.Open();
                         SqlCommand sqlCommand = sqlConnection.CreateCommand();
                         sqlCommand.CommandText = "" +
@@ -68,6 +89,7 @@ namespace ConnectDB
                 }
                 catch (Exception ex)
                 {
+                    
                     MessageBox.Show(ex.Message);
                     sqlConnection.Close();
                     OnLoad(e);
@@ -100,7 +122,7 @@ namespace ConnectDB
             }
             if (!String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
             {
-                sqlCommand.CommandText += $"name={textBox1.Text} and object_definition(object_id)  like '{textBox2.Text}'";
+                sqlCommand.CommandText += $"name like '%{textBox1.Text}%' and object_definition(object_id)  like '%{textBox2.Text}%'";
             }
             if (String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
             {

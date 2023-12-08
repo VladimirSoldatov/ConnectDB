@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DataBuffer.cs" />
+    <Compile Include="Network.cs" />
     <Compile Include="PosgreSQL.cs" />
     <Compile Include="Impersonator.cs" />
     <Compile Include="MainForm.cs">

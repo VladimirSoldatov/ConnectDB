@@ -434,7 +434,9 @@ namespace ConnectDB
             "i82z0report01.vats.local",
             "p0a8i82z2bps02.vats.local",
             "172.30.34.7",
-            "p0a8i82z0db02.vats.local"});
+            "p0a8i82z0db02.vats.local",
+            "p0a8i82z1bps02.vats.local",
+            "10.243.32.230"});
             this.comboBox1.Location = new System.Drawing.Point(225, 553);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(147, 21);
@@ -531,7 +533,7 @@ namespace ConnectDB
             this.Controls.Add(this.button1);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Form1";
+            this.Text = "Автоматизация рутинных задач";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
