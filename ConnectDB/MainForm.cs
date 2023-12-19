@@ -128,7 +128,7 @@ namespace ConnectDB
             {
                 sqlCommand.CommandText += $"object_definition(object_id)  like '%{textBox2.Text}%'";
             }
-            MessageBox.Show(sqlCommand.CommandText);
+
             string distributive = String.Empty;
             string curPath = String.Empty;
             getData(sqlCommand, dataGridView1);
@@ -147,7 +147,10 @@ namespace ConnectDB
             if (!Directory.Exists(curPath))
                 Directory.CreateDirectory(curPath);
 
-
+            if(MessageBox.Show("Открыть папку?","Диалоговое окно",MessageBoxButtons.YesNo)== DialogResult.Yes)
+            {
+                Process.Start("explorer.exe", curPath);
+            }
 
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
