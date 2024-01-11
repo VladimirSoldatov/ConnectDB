@@ -30,6 +30,7 @@ namespace ConnectDB
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button2 = new System.Windows.Forms.Button();
@@ -281,7 +282,6 @@ namespace ConnectDB
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(147, 21);
             this.comboBox2.TabIndex = 24;
-            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // label7
             // 
@@ -409,7 +409,6 @@ namespace ConnectDB
             this.button12.TabIndex = 39;
             this.button12.Text = "Кнопка";
             this.button12.UseVisualStyleBackColor = true;
-            this.button12.Click += new System.EventHandler(this.button12_Click);
             // 
             // textBox12
             // 
@@ -531,6 +530,7 @@ namespace ConnectDB
             this.Controls.Add(this.button2);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.button1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Автоматизация рутинных задач";

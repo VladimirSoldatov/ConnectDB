@@ -151,12 +151,12 @@ namespace ConnectDB
             {
                 Process.Start("explorer.exe", curPath);
             }
-
+            string list_files = String.Empty;
             foreach (DataGridViewRow item in dataGridView1.Rows)
             {
                 if (!String.IsNullOrEmpty(item.Cells[0].FormattedValue.ToString()))
                 {
-                    using (StreamWriter sw = new StreamWriter(curPath + "\\" + item.Cells[0].FormattedValue.ToString() + ".xml"))
+                    using (StreamWriter sw = new StreamWriter(curPath + "\\" + item.Cells[0].FormattedValue.ToString() + ".sql"))
                     {
                         sw.WriteLine(item.Cells[1].FormattedValue.ToString());
                         string text = item.Cells[0].FormattedValue.ToString();
@@ -166,10 +166,14 @@ namespace ConnectDB
                             stored.Add(path + "\\" + item.Cells[0].FormattedValue.ToString());
                         }
                     }
-
+                    list_files += item.Cells[0].FormattedValue.ToString()+Environment.NewLine;
                 }
             }
-
+            using (StreamWriter sw = new StreamWriter(Environment.GetEnvironmentVariable("USERPROFILE") + "\\Desktop" + "\\" + "list_files.txt"))
+            {
+                sw.WriteLine(list_files);
+            }
+            
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -895,15 +899,6 @@ namespace ConnectDB
             }
         }
 
-        private void button12_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -985,14 +980,3 @@ namespace ConnectDB
 }
 
 
-
-
-
-
-/*sqlConnection = new SqlConnection();
-                                {
-                                    sqlConnection.ConnectionString = "Server=i82z0report01; Initial Catalog=webpbxReportDB; Integrated Security=SSPI;";
-                                    sqlConnection.Open();
-                                }
-
-    */
