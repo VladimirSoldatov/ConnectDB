@@ -435,7 +435,8 @@ namespace ConnectDB
             "172.30.34.7",
             "p0a8i82z0db02.vats.local",
             "p0a8i82z1bps02.vats.local",
-            "10.243.32.230"});
+            "10.243.32.230",
+            "p0a8i82z0lst01.vats.local"});
             this.comboBox1.Location = new System.Drawing.Point(225, 553);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(147, 21);
