@@ -29,7 +29,16 @@ namespace ConnectDB
 
         private void button1_Click(object sender, EventArgs e)
         {
-            using (var item = new Impersonator(DataBuffer.userName, "VATS", DataBuffer.userPassword))
+            string[] auth = DataBuffer.userName.Split('\\');
+            string user_domain, user_name;
+            if (auth.Count() == 2)
+            {
+                user_name = auth[1];
+                user_domain = auth[0];
+            }
+            else
+                return;
+            using (var item = new Impersonator(user_name,user_domain, DataBuffer.userPassword))
             {
                 List<string> dtBases = new List<string>();
                 try
@@ -110,7 +119,7 @@ namespace ConnectDB
 
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
             sqlCommand.CommandText = "" +
-                "select name, object_definition(object_id) " +
+                "select schema_name(schema_id)+'.'+ name, object_definition(object_id)" +
                 "from sys.procedures ";
             if (!String.IsNullOrEmpty(textBox1.Text) || !String.IsNullOrEmpty(textBox2.Text))
             {

@@ -54,7 +54,7 @@ namespace ConnectDB
             if(File.Exists(path))
                 using (StreamReader sr = new StreamReader(path))
                 {
-                    textBox1.Text = sr.ReadLine();
+                    textBox1.Text += sr.ReadLine();
                 }
             button1.Focus();
         }
