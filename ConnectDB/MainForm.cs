@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Net;
+using System.Reflection;
 
 
 namespace ConnectDB
@@ -119,8 +120,17 @@ namespace ConnectDB
 
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
             sqlCommand.CommandText = "" +
-                "select schema_name(schema_id)+'.'+ name, object_definition(object_id)" +
-                "from sys.procedures ";
+                "WITH CTE_common (name, definition) " +
+                "as (select schema_name(schema_id) + '.' + name, object_definition(object_id) " +
+                "from sys.procedures " +
+                "union " +
+                "SELECT s.name + '.' + o.name, m.definition " +
+                "  FROM sys.sql_modules m " +
+                "INNER JOIN sys.objects o " +
+                "        ON m.object_id = o.object_id " +
+                "inner join sys.schemas s on s.schema_id = o.schema_id " +
+                "WHERE o.type_desc like '%function%') " +
+                "SELECT * from CTE_common";
             if (!String.IsNullOrEmpty(textBox1.Text) || !String.IsNullOrEmpty(textBox2.Text))
             {
                 sqlCommand.CommandText += "where ";
@@ -131,11 +141,11 @@ namespace ConnectDB
             }
             if (!String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
             {
-                sqlCommand.CommandText += $"name like '%{textBox1.Text}%' and object_definition(object_id)  like '%{textBox2.Text}%'";
+                sqlCommand.CommandText += $"name like '%{textBox1.Text}%' and definition like '%{textBox2.Text}%'";
             }
             if (String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
             {
-                sqlCommand.CommandText += $"object_definition(object_id)  like '%{textBox2.Text}%'";
+                sqlCommand.CommandText += $"definition  like '%{textBox2.Text}%'";
             }
 
             string distributive = String.Empty;

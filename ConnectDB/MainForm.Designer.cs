@@ -431,6 +431,7 @@ namespace ConnectDB
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "i82z0report01.vats.local",
+            "p0a8i82z1bps01.vats.local",
             "p0a8i82z2bps02.vats.local",
             "172.30.34.7",
             "p0a8i82z0db02.vats.local",
