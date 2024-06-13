@@ -130,7 +130,7 @@ namespace ConnectDB
                 "        ON m.object_id = o.object_id " +
                 "inner join sys.schemas s on s.schema_id = o.schema_id " +
                 "WHERE o.type_desc like '%function%') " +
-                "SELECT * from CTE_common";
+                "SELECT * from CTE_common ";
             if (!String.IsNullOrEmpty(textBox1.Text) || !String.IsNullOrEmpty(textBox2.Text))
             {
                 sqlCommand.CommandText += "where ";
