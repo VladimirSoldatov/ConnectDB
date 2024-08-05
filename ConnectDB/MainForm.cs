@@ -12,13 +12,15 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Net;
 using System.Reflection;
+using System.Data.Common;
+using System.Diagnostics.Eventing.Reader;
 
 
 namespace ConnectDB
 {
     public partial class MainForm : Form
     {
-        SqlConnection sqlConnection = null;
+        DbConnection sqlConnection = null;
         List<string> stored = new List<string>();
         string name = String.Empty;
         string password = string.Empty;
@@ -44,62 +46,69 @@ namespace ConnectDB
                 List<string> dtBases = new List<string>();
                 try
                 {
-                    sqlConnection = new SqlConnection();
-                    Dictionary<string, string> ip_pool = new Dictionary<string, string>();
-                    ip_pool.Add("i82z0report01.vats.local", "10.243.32.196");
-                    ip_pool.Add("p0a8i82z0db01.vats.local", "10.243.32.164");
-                    ip_pool.Add("p0a8i82z0db02.vats.local", "10.243.32.165");
-                    ip_pool.Add("p0a8i82z1bps01.vats.local", "10.243.32.230");
-                    ip_pool.Add("p0a8i82z1bps02.vats.local", "10.243.32.230");
-                    ip_pool.Add("p0a8i82z2bps01.vats.local", "10.243.33.54");
-                    ip_pool.Add("p0a8i82z2bps02.vats.local", "10.243.33.54");
-
+                    if (comboBox3.Text == "MS SQL")
                     {
-                        string baseName = "master";
-                        string host = String.Empty;
-                        if (Regex.IsMatch(comboBox1.SelectedItem.ToString(), @"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$"))
+                        sqlConnection = new SqlConnection();
+                        Dictionary<string, string> ip_pool = new Dictionary<string, string>();
+                        ip_pool.Add("i82z0report01.vats.local", "10.243.32.196");
+                        ip_pool.Add("p0a8i82z0db01.vats.local", "10.243.32.164");
+                        ip_pool.Add("p0a8i82z0db02.vats.local", "10.243.32.165");
+                        ip_pool.Add("p0a8i82z1bps01.vats.local", "10.243.32.230");
+                        ip_pool.Add("p0a8i82z1bps02.vats.local", "10.243.32.230");
+                        ip_pool.Add("p0a8i82z2bps01.vats.local", "10.243.33.54");
+                        ip_pool.Add("p0a8i82z2bps02.vats.local", "10.243.33.54");
+
                         {
-                            //Network.PTRLookup(comboBox1.SelectedItem.ToString());
-                            //IPAddress address = IPAddress.Parse(comboBox1.SelectedItem.ToString());
-                            //host = Dns.GetHostByName(address.ToString()).HostName;
-   
-                                host = ip_pool.Keys.Where(s => ip_pool[s] == comboBox1.SelectedItem.ToString()).FirstOrDefault();
-                        }
-                        else
-                            host = comboBox1.SelectedItem.ToString();
-
-
-                        sqlConnection.ConnectionString = $"Server={host}; Initial Catalog={baseName}; Integrated Security=SSPI;";
-                        sqlConnection.Open();
-                        SqlCommand sqlCommand = sqlConnection.CreateCommand();
-                        sqlCommand.CommandText = "" +
-                                                "SELECT " +
-                                                "dbid, name " +
-                                                "FROM " +
-                                                "dbo.sysdatabases";
-
-                        using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
-                        {
-                            if (sqlDataReader.HasRows)
+                            string baseName = "master";
+                            string host = String.Empty;
+                            if (Regex.IsMatch(comboBox1.SelectedItem.ToString(), @"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$"))
                             {
-                                while (sqlDataReader.Read())
-                                {
-                                    dtBases.Add(sqlDataReader.GetString(1));
-                                }
+                                //Network.PTRLookup(comboBox1.SelectedItem.ToString());
+                                //IPAddress address = IPAddress.Parse(comboBox1.SelectedItem.ToString());
+                                //host = Dns.GetHostByName(address.ToString()).HostName;
 
+                                host = ip_pool.Keys.Where(s => ip_pool[s] == comboBox1.SelectedItem.ToString()).FirstOrDefault();
                             }
-                        }
-                        if (dtBases.Contains(comboBox2.Text))
-                        {
-                            sqlCommand.CommandText = $"use {comboBox2.Text}";
-                            sqlCommand.ExecuteNonQuery();
-                        }
+                            else
+                                host = comboBox1.SelectedItem.ToString();
 
+
+                            sqlConnection.ConnectionString = $"Server={host}; Initial Catalog={baseName}; Integrated Security=SSPI;";
+                            sqlConnection.Open();
+                            SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
+                            sqlCommand.CommandText = "" +
+                                                    "SELECT " +
+                                                    "dbid, name " +
+                                                    "FROM " +
+                                                    "dbo.sysdatabases";
+
+                            using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                            {
+                                if (sqlDataReader.HasRows)
+                                {
+                                    while (sqlDataReader.Read())
+                                    {
+                                        dtBases.Add(sqlDataReader.GetString(1));
+                                    }
+
+                                }
+                            }
+                            if (dtBases.Contains(comboBox2.Text))
+                            {
+                                sqlCommand.CommandText = $"use {comboBox2.Text}";
+                                sqlCommand.ExecuteNonQuery();
+                            }
+
+                        }
                     }
+                    else 
+                    {
+                    }
+    
                 }
                 catch (Exception ex)
                 {
-                    
+
                     MessageBox.Show(ex.Message);
                     sqlConnection.Close();
                     OnLoad(e);
@@ -116,81 +125,96 @@ namespace ConnectDB
         {
 
 
+
             button1.PerformClick();
-
-            SqlCommand sqlCommand = sqlConnection.CreateCommand();
-            sqlCommand.CommandText = "" +
-                "WITH CTE_common (name, definition) " +
-                "as (select schema_name(schema_id) + '.' + name, object_definition(object_id) " +
-                "from sys.procedures " +
-                "union " +
-                "SELECT s.name + '.' + o.name, m.definition " +
-                "  FROM sys.sql_modules m " +
-                "INNER JOIN sys.objects o " +
-                "        ON m.object_id = o.object_id " +
-                "inner join sys.schemas s on s.schema_id = o.schema_id " +
-                "WHERE o.type_desc like '%function%') " +
-                "SELECT * from CTE_common ";
-            if (!String.IsNullOrEmpty(textBox1.Text) || !String.IsNullOrEmpty(textBox2.Text))
+            if (comboBox3.SelectedText == "MS SQL")
             {
-                sqlCommand.CommandText += "where ";
-            }
-            if (!String.IsNullOrEmpty(textBox1.Text) && String.IsNullOrEmpty(textBox2.Text))
-            {
-                sqlCommand.CommandText += $"name like '%{textBox1.Text}%' ";
-            }
-            if (!String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
-            {
-                sqlCommand.CommandText += $"name like '%{textBox1.Text}%' and definition like '%{textBox2.Text}%'";
-            }
-            if (String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
-            {
-                sqlCommand.CommandText += $"definition  like '%{textBox2.Text}%'";
-            }
-
-            string distributive = String.Empty;
-            string curPath = String.Empty;
-            getData(sqlCommand, dataGridView1);
-            string path = String.Empty;
-            if (comboBox1.SelectedItem.ToString() == "i82z0report01.vats.local")
-                path = "WebRS";
-            else
-                path = "Billing";
-            distributive = $"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs";
-            curPath = distributive + "\\" + path;
-
-            if (!Directory.Exists(distributive))
-                Directory.CreateDirectory(distributive);
-            if (Directory.Exists(curPath))
-                Directory.Delete(curPath, true);
-            if (!Directory.Exists(curPath))
-                Directory.CreateDirectory(curPath);
-
-            if(MessageBox.Show("Открыть папку?","Диалоговое окно",MessageBoxButtons.YesNo)== DialogResult.Yes)
-            {
-                Process.Start("explorer.exe", curPath);
-            }
-            string list_files = String.Empty;
-            foreach (DataGridViewRow item in dataGridView1.Rows)
-            {
-                if (!String.IsNullOrEmpty(item.Cells[0].FormattedValue.ToString()))
+                SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
+                sqlCommand.CommandText = "" +
+                    "WITH CTE_common (name, definition) " +
+                    "as (select schema_name(schema_id) + '.' + name, object_definition(object_id) " +
+                    "from sys.procedures " +
+                    "union " +
+                    "SELECT s.name + '.' + o.name, m.definition " +
+                    "  FROM sys.sql_modules m " +
+                    "INNER JOIN sys.objects o " +
+                    "        ON m.object_id = o.object_id " +
+                    "inner join sys.schemas s on s.schema_id = o.schema_id " +
+                    "WHERE o.type_desc like '%function%') " +
+                    "SELECT * from CTE_common ";
+                if (!String.IsNullOrEmpty(textBox1.Text) || !String.IsNullOrEmpty(textBox2.Text))
                 {
-                    using (StreamWriter sw = new StreamWriter(curPath + "\\" + item.Cells[0].FormattedValue.ToString() + ".sql"))
+                    sqlCommand.CommandText += "where ";
+                }
+                if (!String.IsNullOrEmpty(textBox1.Text) && String.IsNullOrEmpty(textBox2.Text))
+                {
+                    sqlCommand.CommandText += $"name like '%{textBox1.Text}%' ";
+                }
+                if (!String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
+                {
+                    sqlCommand.CommandText += $"name like '%{textBox1.Text}%' and definition like '%{textBox2.Text}%'";
+                }
+                if (String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
+                {
+                    sqlCommand.CommandText += $"definition  like '%{textBox2.Text}%'";
+                }
+
+                string distributive = String.Empty;
+                string curPath = String.Empty;
+                getData(sqlCommand, dataGridView1);
+                string path = String.Empty;
+                if (comboBox1.SelectedItem.ToString() == "i82z0report01.vats.local")
+                    path = "WebRS";
+                else if (comboBox1.SelectedItem.ToString() == "p0a8i82z1bps01.vats.local" || comboBox1.SelectedItem.ToString() == "p0a8i82z1bps02.vats.local" || comboBox1.SelectedItem.ToString() == "10.243.32.230")
+                    path = "Billing_1";
+                else if (comboBox1.SelectedItem.ToString() == "p0a8i82z2bps01.vats.local" || comboBox1.SelectedItem.ToString() == "p0a8i82z2bps02.vats.local" || comboBox1.SelectedItem.ToString() == "10.243.33.54")
+                    path = "Billing_2";
+                else if (comboBox1.SelectedItem.ToString() == "172.30.34.8" || comboBox1.SelectedItem.ToString() == "172.30.34.7")
+                    path = "8_800";
+                else
+                    path = "Other";
+
+                distributive = $"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs";
+                curPath = distributive + "\\" + path;
+
+                if (!Directory.Exists(distributive))
+                    Directory.CreateDirectory(distributive);
+                if (Directory.Exists(curPath))
+                    Directory.Delete(curPath, true);
+                if (!Directory.Exists(curPath))
+                    Directory.CreateDirectory(curPath);
+
+                if (MessageBox.Show("Открыть папку?", "Диалоговое окно", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    Process.Start("explorer.exe", curPath);
+                }
+                string list_files = String.Empty;
+                foreach (DataGridViewRow item in dataGridView1.Rows)
+                {
+                    if (!String.IsNullOrEmpty(item.Cells[0].FormattedValue.ToString()))
                     {
-                        sw.WriteLine(item.Cells[1].FormattedValue.ToString());
-                        string text = item.Cells[0].FormattedValue.ToString();
-                        int count = stored.Count(u => u == path + "\\" + text);
-                        if (count == 0)
+                        using (StreamWriter sw = new StreamWriter(curPath + "\\" + item.Cells[0].FormattedValue.ToString() + ".sql"))
                         {
-                            stored.Add(path + "\\" + item.Cells[0].FormattedValue.ToString());
+                            sw.WriteLine(item.Cells[1].FormattedValue.ToString());
+                            string text = item.Cells[0].FormattedValue.ToString();
+                            int count = stored.Count(u => u == path + "\\" + text);
+                            if (count == 0)
+                            {
+                                stored.Add(path + "\\" + item.Cells[0].FormattedValue.ToString());
+                            }
                         }
+                        list_files += item.Cells[0].FormattedValue.ToString() + Environment.NewLine;
                     }
-                    list_files += item.Cells[0].FormattedValue.ToString()+Environment.NewLine;
+                }
+                using (StreamWriter sw = new StreamWriter(Environment.GetEnvironmentVariable("USERPROFILE") + "\\Desktop" + "\\" + "list_files.txt"))
+                {
+                    sw.WriteLine(list_files);
                 }
             }
-            using (StreamWriter sw = new StreamWriter(Environment.GetEnvironmentVariable("USERPROFILE") + "\\Desktop" + "\\" + "list_files.txt"))
+        
+            else
             {
-                sw.WriteLine(list_files);
+
             }
             
         }
@@ -199,7 +223,7 @@ namespace ConnectDB
         {
 
             button1.PerformClick();
-            SqlCommand sqlCommand = sqlConnection.CreateCommand();
+            SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
             sqlCommand.CommandText = "" +
                 "SELECT Tables.Table_Catalog as [Имя БД], tables.table_SCHEMA as [Имя схемы], tables.TABLE_NAME AS [Имя таблицы] " +
                 "FROM INFORMATION_SCHEMA.TABLES " +
@@ -231,7 +255,7 @@ namespace ConnectDB
         private void button4_Click(object sender, EventArgs e)
         {
             button1.PerformClick();
-            SqlCommand sqlCommand = sqlConnection.CreateCommand();
+            SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
 
             try
             {
@@ -286,7 +310,7 @@ namespace ConnectDB
             {
                 if (sqlConnection == null)
                     button1.PerformClick();
-                SqlCommand sqlCommand = sqlConnection.CreateCommand();
+                SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
 
                 sqlCommand.CommandText = "" +
                       $"SELECT TOP 10 * " +
@@ -326,7 +350,7 @@ namespace ConnectDB
                               {
                                   sqlConnection.ConnectionString = $"Server={comboBox1.SelectedItem.ToString()}; Initial Catalog={comboBox2.SelectedItem.ToString()}; Integrated Security=SSPI;";
                                   sqlConnection.Open();*/
-                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                using (SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand())
                 {
                     sqlCommand.CommandText = "" +
                         "SELECT " +
@@ -418,7 +442,7 @@ namespace ConnectDB
             {
                 if (sqlConnection == null)
                     button1.PerformClick();
-                SqlCommand sqlCommand = sqlConnection.CreateCommand();
+                SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
 
                 sqlCommand.CommandText = "" +
                       $"SELECT TOP 10 * " +
@@ -540,7 +564,7 @@ namespace ConnectDB
                 comboBox2.SelectedIndex = 0;
                 button1.PerformClick();
                 Dictionary<int, string> ASR = new Dictionary<int, string>();
-                using (SqlCommand sqlCommand1 = sqlConnection.CreateCommand())
+                using (SqlCommand sqlCommand1 = (sqlConnection as SqlConnection).CreateCommand())
                 {
                     sqlCommand1.CommandText = "EXEC Rep.DEFIR_FileTypeC_RS";
                     using (SqlDataReader sqlDataReader = sqlCommand1.ExecuteReader())
@@ -558,7 +582,7 @@ namespace ConnectDB
                 button1.PerformClick();
                 foreach (var AsrList in ASR)
                 {
-                    using (SqlCommand sqlCommand1 = sqlConnection.CreateCommand())
+                    using (SqlCommand sqlCommand1 = (sqlConnection as SqlConnection).CreateCommand())
                     {
                         sqlCommand1.CommandText = String.Format(richTextBox1.Text, AsrList.Key.ToString());
                         using (SqlDataReader sqlDataReader = sqlCommand1.ExecuteReader())
@@ -580,7 +604,7 @@ namespace ConnectDB
                 return;
             }
             button1.PerformClick();
-            SqlCommand sqlCommand = sqlConnection.CreateCommand();
+            SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
             sqlCommand.CommandText = richTextBox1.Text;
             // MessageBox.Show(sqlCommand.CommandText);
 
@@ -607,7 +631,7 @@ namespace ConnectDB
         {
             button1.PerformClick();
             string[] list = richTextBox1.Text.Split(',');
-            using (SqlCommand sqlCommand1 = sqlConnection.CreateCommand())
+            using (SqlCommand sqlCommand1 = (sqlConnection as SqlConnection).CreateCommand())
             {
                 int count = 0;
                 string nameSP = String.Empty;
@@ -669,7 +693,7 @@ namespace ConnectDB
         {
             button1.PerformClick();
 
-            SqlCommand sqlCommand = sqlConnection.CreateCommand();
+            SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
             sqlCommand.CommandText = ""+
                 "SELECT CONCAT(TABLE_SCHEMA,'.',TABLE_NAME)" +
                 "from " +
@@ -894,7 +918,7 @@ namespace ConnectDB
        
             
             int num = 0;
-            using (SqlCommand sqlCommand1 = sqlConnection.CreateCommand())
+            using (SqlCommand sqlCommand1 = (sqlConnection as SqlConnection).CreateCommand())
             {
                 sqlCommand1.CommandText = "WITH ItemContentBinaries AS\r\n(\r\nSELECT\r\nPath\r\n,CONVERT(varbinary(max),Content) AS Content\r\nFROM ReportServer.dbo.Catalog\r\nWHERE Type IN (2,5,7,8)\r\nand content is not null\r\nand path not Like ('%Data Sources%')\r\nand path not in ('')\r\n),\r\n--The second CTE strips off the BOM if it exists…\r\nItemContentNoBOM AS\r\n(\r\nSELECT\r\nPath\r\n,CASE\r\nWHEN LEFT(Content,3) = 0xEFBBBF\r\nTHEN CONVERT(varchar(max),SUBSTRING(Content,4,LEN(Content)))\r\nELSE\r\nContent\r\nEND AS Content\r\nFROM ItemContentBinaries\r\n)\r\n--–The outer query gets the content in its varbinary, varchar and xml representations…\r\nSELECT\r\nReplace(Path, '/', '\\') AS Path\r\n,CONVERT(varbinary(max),Content) AS ReportData --–varbinary\r\n\r\nFROM ItemContentNoBOM";
                 SqlDataReader sqlDataReader = sqlCommand1.ExecuteReader();
@@ -922,7 +946,7 @@ namespace ConnectDB
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             button1.PerformClick();
-            SqlCommand sqlCommand = sqlConnection.CreateCommand();
+            SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
             sqlCommand.CommandText = "" +
             "SELECT " +
             "dbid, name " +
@@ -993,6 +1017,33 @@ namespace ConnectDB
         {
             if(thread != null)
             thread.Abort();
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            comboBox1.Items.Clear();
+            if (comboBox1.Text == "MS SQL")
+            {
+                comboBox1.Items.AddRange(new object[] {
+            "i82z0report01.vats.local",
+            "p0a8i82z1bps01.vats.local",
+            "p0a8i82z2bps02.vats.local",
+            "172.30.34.7",
+            "172.30.34.8",
+            "p0a8i82z0db02.vats.local",
+            "p0a8i82z1bps02.vats.local",
+            "10.243.32.230",
+            "10.243.33.54",
+            "p0a8i82z0lst01.vats.local"});
+            }
+            else
+            {
+                comboBox1.Items.AddRange(new object[] {
+            "10.243.32.246",
+            "10.243.33.70",
+            "10.243.208.114"   });
+
+            }
         }
     }
 
