@@ -76,13 +76,14 @@ namespace ConnectDB
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.button14 = new System.Windows.Forms.Button();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(10, 542);
+            this.button1.Location = new System.Drawing.Point(10, 540);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(116, 32);
             this.button1.TabIndex = 0;
@@ -281,13 +282,13 @@ namespace ConnectDB
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Location = new System.Drawing.Point(447, 552);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(147, 21);
+            this.comboBox2.Size = new System.Drawing.Size(198, 21);
             this.comboBox2.TabIndex = 24;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(128, 559);
+            this.label7.Location = new System.Drawing.Point(132, 555);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(68, 13);
             this.label7.TabIndex = 25;
@@ -296,7 +297,7 @@ namespace ConnectDB
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(600, 559);
+            this.label8.Location = new System.Drawing.Point(651, 555);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(96, 13);
             this.label8.TabIndex = 26;
@@ -304,9 +305,9 @@ namespace ConnectDB
             // 
             // textBox9
             // 
-            this.textBox9.Location = new System.Drawing.Point(702, 556);
+            this.textBox9.Location = new System.Drawing.Point(753, 552);
             this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(164, 20);
+            this.textBox9.Size = new System.Drawing.Size(113, 20);
             this.textBox9.TabIndex = 27;
             // 
             // button7
@@ -413,7 +414,7 @@ namespace ConnectDB
             // 
             // textBox12
             // 
-            this.textBox12.Location = new System.Drawing.Point(968, 556);
+            this.textBox12.Location = new System.Drawing.Point(968, 552);
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new System.Drawing.Size(135, 20);
             this.textBox12.TabIndex = 40;
@@ -421,7 +422,7 @@ namespace ConnectDB
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(872, 560);
+            this.label9.Location = new System.Drawing.Point(872, 557);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(90, 13);
             this.label9.TabIndex = 41;
@@ -441,8 +442,7 @@ namespace ConnectDB
             "10.243.32.230",
             "10.243.33.54",
             "p0a8i82z0lst01.vats.local"});
-            this.comboBox1.SelectedItem = 0;
-            this.comboBox1.Location = new System.Drawing.Point(281, 553);
+            this.comboBox1.Location = new System.Drawing.Point(292, 551);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(147, 21);
             this.comboBox1.TabIndex = 42;
@@ -493,19 +493,30 @@ namespace ConnectDB
             this.comboBox3.Items.AddRange(new object[] {
             "MS SQL",
             "MySQL"});
-            this.comboBox3.SelectedIndex = 0;
-            this.comboBox3.Text = "MS SQL";
-            this.comboBox3.Location = new System.Drawing.Point(202, 553);
+            this.comboBox3.Location = new System.Drawing.Point(206, 549);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(73, 21);
             this.comboBox3.TabIndex = 47;
             this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Location = new System.Drawing.Point(495, 474);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(49, 17);
+            this.checkBox1.TabIndex = 48;
+            this.checkBox1.Text = "LIKE";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1109, 690);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.comboBox3);
             this.Controls.Add(this.button14);
             this.Controls.Add(this.progressBar1);
@@ -611,6 +622,7 @@ namespace ConnectDB
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button button14;
         private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

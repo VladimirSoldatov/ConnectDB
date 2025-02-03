@@ -46,7 +46,7 @@ namespace ConnectDB
                 List<string> dtBases = new List<string>();
                 try
                 {
-                    if (comboBox3.Text == "MS SQL")
+                    if ((comboBox3.SelectedItem as string) == "MS SQL")
                     {
                         sqlConnection = new SqlConnection();
                         Dictionary<string, string> ip_pool = new Dictionary<string, string>();
@@ -57,20 +57,21 @@ namespace ConnectDB
                         ip_pool.Add("p0a8i82z1bps02.vats.local", "10.243.32.230");
                         ip_pool.Add("p0a8i82z2bps01.vats.local", "10.243.33.54");
                         ip_pool.Add("p0a8i82z2bps02.vats.local", "10.243.33.54");
+                        ip_pool.Add("u0a8i82z0db01.vats.local", "10.243.208.92");
 
                         {
                             string baseName = "master";
                             string host = String.Empty;
-                            if (Regex.IsMatch(comboBox1.SelectedItem.ToString(), @"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$"))
+                            if (Regex.IsMatch(comboBox1.Text, @"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$"))
                             {
                                 //Network.PTRLookup(comboBox1.SelectedItem.ToString());
                                 //IPAddress address = IPAddress.Parse(comboBox1.SelectedItem.ToString());
                                 //host = Dns.GetHostByName(address.ToString()).HostName;
 
-                                host = ip_pool.Keys.Where(s => ip_pool[s] == comboBox1.SelectedItem.ToString()).FirstOrDefault();
+                                host = ip_pool.Keys.Where(s => ip_pool[s] == comboBox1.Text).FirstOrDefault();
                             }
                             else
-                                host = comboBox1.SelectedItem.ToString();
+                                host = comboBox1.Text;
 
 
                             sqlConnection.ConnectionString = $"Server={host}; Initial Catalog={baseName}; Integrated Security=SSPI;";
@@ -127,7 +128,7 @@ namespace ConnectDB
 
 
             button1.PerformClick();
-            if (comboBox3.SelectedText == "MS SQL")
+            if (comboBox3.Text == "MS SQL")
             {
                 SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
                 sqlCommand.CommandText = "" +
@@ -150,9 +151,13 @@ namespace ConnectDB
                 {
                     sqlCommand.CommandText += $"name like '%{textBox1.Text}%' ";
                 }
-                if (!String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
+                if (!String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text) && checkBox1.Checked == true)
                 {
                     sqlCommand.CommandText += $"name like '%{textBox1.Text}%' and definition like '%{textBox2.Text}%'";
+                }
+                if (!String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text) && checkBox1.Checked == false)
+                {
+                    sqlCommand.CommandText += $"name like '%{textBox1.Text}%' and definition not like '%{textBox2.Text}%'";
                 }
                 if (String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
                 {
@@ -162,17 +167,17 @@ namespace ConnectDB
                 string distributive = String.Empty;
                 string curPath = String.Empty;
                 getData(sqlCommand, dataGridView1);
+                
                 string path = String.Empty;
-                if (comboBox1.SelectedItem.ToString() == "i82z0report01.vats.local")
-                    path = "WebRS";
-                else if (comboBox1.SelectedItem.ToString() == "p0a8i82z1bps01.vats.local" || comboBox1.SelectedItem.ToString() == "p0a8i82z1bps02.vats.local" || comboBox1.SelectedItem.ToString() == "10.243.32.230")
-                    path = "Billing_1";
-                else if (comboBox1.SelectedItem.ToString() == "p0a8i82z2bps01.vats.local" || comboBox1.SelectedItem.ToString() == "p0a8i82z2bps02.vats.local" || comboBox1.SelectedItem.ToString() == "10.243.33.54")
-                    path = "Billing_2";
-                else if (comboBox1.SelectedItem.ToString() == "172.30.34.8" || comboBox1.SelectedItem.ToString() == "172.30.34.7")
-                    path = "8_800";
+                if (comboBox2.Text == "billing_federal")
+                {
+                    if (comboBox1.SelectedItem.ToString() == "p0a8i82z1bps01.vats.local" || comboBox1.SelectedItem.ToString() == "p0a8i82z1bps02.vats.local" || comboBox1.SelectedItem.ToString() == "10.243.32.230")
+                        path = "Billing_1";
+                    else if (comboBox1.SelectedItem.ToString() == "p0a8i82z2bps01.vats.local" || comboBox1.SelectedItem.ToString() == "p0a8i82z2bps02.vats.local" || comboBox1.SelectedItem.ToString() == "10.243.33.54")
+                        path = "Billing_2";
+                }
                 else
-                    path = "Other";
+                    path = comboBox2.Text;
 
                 distributive = $"{Environment.GetEnvironmentVariable("SystemDrive")}{Environment.GetEnvironmentVariable("HOMEPATH")}\\Desktop\\storedproceduresrs";
                 curPath = distributive + "\\" + path;
@@ -527,6 +532,7 @@ namespace ConnectDB
             else
                 this.Close();
             comboBox1.SelectedIndex = 0;
+            comboBox3.SelectedIndex = 0;
             this.dateTimePicker1.Value = DateTime.Now.AddDays(-DateTime.Now.Day + 1).AddMonths(-3);
             textBox12.Text = Environment.GetEnvironmentVariable("USERPROFILE") + "\\DESKTOP";
             this.dateTimePicker2.Value = DateTime.Now.AddDays(-DateTime.Now.Day);
@@ -1022,7 +1028,7 @@ namespace ConnectDB
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             comboBox1.Items.Clear();
-            if (comboBox1.Text == "MS SQL")
+            if (comboBox3.Text == "MS SQL")
             {
                 comboBox1.Items.AddRange(new object[] {
             "i82z0report01.vats.local",
