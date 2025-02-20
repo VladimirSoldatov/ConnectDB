@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace ConnectDB
 {
@@ -31,6 +32,7 @@ namespace ConnectDB
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button2 = new System.Windows.Forms.Button();
@@ -431,22 +433,10 @@ namespace ConnectDB
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "i82z0report01.vats.local",
-            "p0a8i82z1bps01.vats.local",
-            "p0a8i82z2bps02.vats.local",
-            "172.30.34.7",
-            "172.30.34.8",
-            "p0a8i82z0db02.vats.local",
-            "p0a8i82z1bps02.vats.local",
-            "10.243.32.230",
-            "10.243.33.54",
-            "p0a8i82z0lst01.vats.local"});
             this.comboBox1.Location = new System.Drawing.Point(292, 551);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(147, 21);
             this.comboBox1.TabIndex = 42;
-            this.comboBox1.Text = "i82z0report01.vats.local";
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // button13

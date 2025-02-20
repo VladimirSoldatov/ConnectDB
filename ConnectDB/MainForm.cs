@@ -24,13 +24,14 @@ namespace ConnectDB
         List<string> stored = new List<string>();
         string name = String.Empty;
         string password = string.Empty;
-
+        Dictionary<string, string> ip_pool;
         public MainForm()
         {
             InitializeComponent();
+
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        async void Create_Connection(EventArgs e)
         {
             string[] auth = DataBuffer.userName.Split('\\');
             string user_domain, user_name;
@@ -41,7 +42,9 @@ namespace ConnectDB
             }
             else
                 return;
-            using (var item = new Impersonator(user_name,user_domain, DataBuffer.userPassword))
+
+
+            using (var item = new Impersonator(user_name, user_domain, DataBuffer.userPassword))
             {
                 List<string> dtBases = new List<string>();
                 try
@@ -49,15 +52,6 @@ namespace ConnectDB
                     if ((comboBox3.SelectedItem as string) == "MS SQL")
                     {
                         sqlConnection = new SqlConnection();
-                        Dictionary<string, string> ip_pool = new Dictionary<string, string>();
-                        ip_pool.Add("i82z0report01.vats.local", "10.243.32.196");
-                        ip_pool.Add("p0a8i82z0db01.vats.local", "10.243.32.164");
-                        ip_pool.Add("p0a8i82z0db02.vats.local", "10.243.32.165");
-                        ip_pool.Add("p0a8i82z1bps01.vats.local", "10.243.32.230");
-                        ip_pool.Add("p0a8i82z1bps02.vats.local", "10.243.32.230");
-                        ip_pool.Add("p0a8i82z2bps01.vats.local", "10.243.33.54");
-                        ip_pool.Add("p0a8i82z2bps02.vats.local", "10.243.33.54");
-                        ip_pool.Add("u0a8i82z0db01.vats.local", "10.243.208.92");
 
                         {
                             string baseName = "master";
@@ -68,13 +62,13 @@ namespace ConnectDB
                                 //IPAddress address = IPAddress.Parse(comboBox1.SelectedItem.ToString());
                                 //host = Dns.GetHostByName(address.ToString()).HostName;
 
-                                host = ip_pool.Keys.Where(s => ip_pool[s] == comboBox1.Text).FirstOrDefault();
+                                host = comboBox1.Text;
                             }
                             else
-                                host = comboBox1.Text;
+                                host = ip_pool[comboBox1.Text];
 
 
-                            sqlConnection.ConnectionString = $"Server={host}; Initial Catalog={baseName}; Integrated Security=SSPI;";
+                            sqlConnection.ConnectionString = $"Server={host}; Initial Catalog={baseName}; Integrated Security=SSPI;Connect Timeout=600;MultipleActiveResultSets=True;";
                             sqlConnection.Open();
                             SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
                             sqlCommand.CommandText = "" +
@@ -87,7 +81,7 @@ namespace ConnectDB
                             {
                                 if (sqlDataReader.HasRows)
                                 {
-                                    while (sqlDataReader.Read())
+                                    while (await sqlDataReader.ReadAsync())
                                     {
                                         dtBases.Add(sqlDataReader.GetString(1));
                                     }
@@ -97,15 +91,15 @@ namespace ConnectDB
                             if (dtBases.Contains(comboBox2.Text))
                             {
                                 sqlCommand.CommandText = $"use {comboBox2.Text}";
-                                sqlCommand.ExecuteNonQuery();
+                                await sqlCommand.ExecuteNonQueryAsync();
                             }
 
                         }
                     }
-                    else 
+                    else
                     {
                     }
-    
+
                 }
                 catch (Exception ex)
                 {
@@ -117,7 +111,12 @@ namespace ConnectDB
 
             }
 
-
+        }
+        public delegate void MyDelegate(EventArgs e);
+        private  void button1_Click(object sender, EventArgs e)
+        {
+            //BeginInvoke(new MyDelegate(Create_Connection), e); // изменяем элемент передав ему значение
+            Create_Connection(e);
 
         }
 
@@ -159,9 +158,13 @@ namespace ConnectDB
                 {
                     sqlCommand.CommandText += $"name like '%{textBox1.Text}%' and definition not like '%{textBox2.Text}%'";
                 }
-                if (String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text))
+                if (String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text) && checkBox1.Checked == true)
                 {
                     sqlCommand.CommandText += $"definition  like '%{textBox2.Text}%'";
+                }
+                if (String.IsNullOrEmpty(textBox1.Text) && !String.IsNullOrEmpty(textBox2.Text) && checkBox1.Checked == false)
+                {
+                    sqlCommand.CommandText += $"definition  not like '%{textBox2.Text}%'";
                 }
 
                 string distributive = String.Empty;
@@ -523,6 +526,21 @@ namespace ConnectDB
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            ip_pool = new Dictionary<string, string>();
+            using (StreamReader sr = new StreamReader($"{Directory.GetCurrentDirectory()}\\databases.txt"))
+            {
+                string line;
+                while (!sr.EndOfStream)
+                {
+                    line = sr.ReadLine();
+                    var values = line.Split(new char[] { ',' });
+                    if (values.Length == 2)
+                    {
+                        ip_pool.Add(values[0], values[1]);
+                    }
+                }
+            }
+
             Wellcome wellcome = new Wellcome();
             this.Hide();
             if (wellcome.ShowDialog() == DialogResult.OK)
@@ -531,8 +549,9 @@ namespace ConnectDB
             }
             else
                 this.Close();
-            comboBox1.SelectedIndex = 0;
+
             comboBox3.SelectedIndex = 0;
+            comboBox1.SelectedIndex = 0;
             this.dateTimePicker1.Value = DateTime.Now.AddDays(-DateTime.Now.Day + 1).AddMonths(-3);
             textBox12.Text = Environment.GetEnvironmentVariable("USERPROFILE") + "\\DESKTOP";
             this.dateTimePicker2.Value = DateTime.Now.AddDays(-DateTime.Now.Day);
@@ -949,21 +968,22 @@ namespace ConnectDB
         }
 
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private async void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             button1.PerformClick();
+         
             SqlCommand sqlCommand = (sqlConnection as SqlConnection).CreateCommand();
             sqlCommand.CommandText = "" +
             "SELECT " +
             "dbid, name " +
             "FROM " +
             "master.dbo.sysdatabases";
-            using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+            using (SqlDataReader sqlDataReader = await sqlCommand.ExecuteReaderAsync())
             {
                 comboBox2.Items.Clear();
                 if (sqlDataReader.HasRows)
                 {
-                    while (sqlDataReader.Read())
+                    while (await sqlDataReader.ReadAsync())
                     {
                        // if(sqlDataReader.GetInt16(0)>4)
                         comboBox2.Items.Add(sqlDataReader.GetSqlString(1));
@@ -1027,27 +1047,15 @@ namespace ConnectDB
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
+           
             comboBox1.Items.Clear();
             if (comboBox3.Text == "MS SQL")
             {
-                comboBox1.Items.AddRange(new object[] {
-            "i82z0report01.vats.local",
-            "p0a8i82z1bps01.vats.local",
-            "p0a8i82z2bps02.vats.local",
-            "172.30.34.7",
-            "172.30.34.8",
-            "p0a8i82z0db02.vats.local",
-            "p0a8i82z1bps02.vats.local",
-            "10.243.32.230",
-            "10.243.33.54",
-            "p0a8i82z0lst01.vats.local"});
+                comboBox1.Items.AddRange(ip_pool.Keys.Where(p => !p.Contains("unix")).ToArray());
             }
             else
             {
-                comboBox1.Items.AddRange(new object[] {
-            "10.243.32.246",
-            "10.243.33.70",
-            "10.243.208.114"   });
+                comboBox1.Items.AddRange(ip_pool.Keys.Where(p => p.Contains("unix")).ToArray());
 
             }
         }
